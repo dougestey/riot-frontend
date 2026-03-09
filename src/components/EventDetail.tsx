@@ -105,11 +105,11 @@ export function EventDetail({ event }: EventDetailProps) {
     <Page>
       <Navbar
         colors={navbarColors}
-        title="Event"
-        left={
+        centerTitle={false}
+        title={
           <Link
             href="/"
-            className="flex items-center gap-1 pl-2 text-sm text-white"
+            className="flex items-center gap-1 text-sm font-medium text-white"
           >
             <svg
               width="20"
@@ -167,7 +167,7 @@ export function EventDetail({ event }: EventDetailProps) {
         {(isCancelled || isPostponed) && (
           <div className="mb-3">
             <span
-              className={`inline-block rounded-full px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white ${
+              className={`inline-block rounded px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white ${
                 isCancelled ? 'bg-red-600' : 'bg-amber-600'
               }`}
             >
@@ -194,10 +194,32 @@ export function EventDetail({ event }: EventDetailProps) {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="18"
+                rx="2"
+                ry="2"
+              />
+              <line
+                x1="16"
+                y1="2"
+                x2="16"
+                y2="6"
+              />
+              <line
+                x1="8"
+                y1="2"
+                x2="8"
+                y2="6"
+              />
+              <line
+                x1="3"
+                y1="10"
+                x2="21"
+                y2="10"
+              />
             </svg>
           </div>
           <div>
@@ -221,7 +243,11 @@ export function EventDetail({ event }: EventDetailProps) {
                 strokeLinejoin="round"
               >
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="3"
+                />
               </svg>
             </div>
             <div>
@@ -283,7 +309,11 @@ export function EventDetail({ event }: EventDetailProps) {
                 strokeLinejoin="round"
               >
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
+                <circle
+                  cx="9"
+                  cy="7"
+                  r="4"
+                />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
@@ -303,7 +333,7 @@ export function EventDetail({ event }: EventDetailProps) {
             {categories.map((cat) => (
               <span
                 key={cat.id}
-                className="rounded-full bg-riot-red px-3 py-1 text-xs font-medium uppercase tracking-wide text-white"
+                className="rounded bg-riot-pink px-3 py-1 text-xs font-medium uppercase tracking-wide text-white"
               >
                 {cat.name}
               </span>

@@ -155,7 +155,7 @@ function EventsFeed() {
   }, []);
 
   return (
-    <div className="space-y-4 px-4 pt-4 pb-24">
+    <div className="space-y-4 px-4 pt-6 pb-24">
       <SearchBar onSearch={handleSearch} />
       <CategoryFilter
         activeCategoryId={categoryId}

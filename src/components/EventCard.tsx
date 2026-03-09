@@ -27,7 +27,9 @@ function getCategories(cats: Event['categories']): Category[] {
 
 function formatDateTag(dateStr: string) {
   const date = new Date(dateStr);
-  const weekday = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+  const weekday = date
+    .toLocaleDateString('en-US', { weekday: 'short' })
+    .toUpperCase();
   const day = date.getDate();
   return { weekday, day };
 }
@@ -97,7 +99,7 @@ export function EventCard({ event }: EventCardProps) {
         {(isCancelled || isPostponed) && (
           <div className="absolute bottom-3 left-3">
             <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white ${
+              className={`rounded px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white ${
                 isCancelled ? 'bg-red-600' : 'bg-amber-600'
               }`}
             >
@@ -108,7 +110,10 @@ export function EventCard({ event }: EventCardProps) {
       </div>
 
       {/* Content */}
-      <Link href={`/events/${event.slug}`} className="block p-4">
+      <Link
+        href={`/events/${event.slug}`}
+        className="block p-4"
+      >
         <h3 className="font-display text-lg font-semibold leading-tight text-riot-text">
           {event.title}
         </h3>
@@ -126,7 +131,7 @@ export function EventCard({ event }: EventCardProps) {
             {categories.map((cat) => (
               <span
                 key={cat.id}
-                className="rounded-full bg-riot-red px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white"
+                className="rounded bg-riot-pink px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white"
               >
                 {cat.name}
               </span>
