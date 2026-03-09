@@ -8,12 +8,12 @@ import {
   Toolbar,
   TabbarLink,
   Icon,
-  Preloader,
   Block,
 } from 'konsta/react';
 import { getEvents } from '@/lib/api';
 import type { Event } from '@/lib/types';
 import { EventCard } from './EventCard';
+import { EventCardSkeleton } from './EventCardSkeleton';
 import { SearchBar } from './SearchBar';
 import { CategoryFilter } from './CategoryFilter';
 
@@ -163,8 +163,10 @@ function EventsFeed() {
       />
 
       {loading && (
-        <div className="flex justify-center py-12">
-          <Preloader />
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <EventCardSkeleton key={i} />
+          ))}
         </div>
       )}
 

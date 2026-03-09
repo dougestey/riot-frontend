@@ -51,8 +51,8 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
       {/* Image + date tag + favorite */}
-      <div className="relative aspect-[16/9] bg-gradient-to-br from-riot-black/80 to-riot-black/40">
-        {imageUrl && (
+      <div className="relative aspect-[16/9] bg-gradient-to-br from-riot-black to-riot-black/70">
+        {imageUrl ? (
           <Image
             src={imageUrl}
             alt={imageAlt}
@@ -60,6 +60,16 @@ export function EventCard({ event }: EventCardProps) {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 400px"
           />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Image
+              src="/riot_logo.png"
+              alt=""
+              width={48}
+              height={48}
+              className="opacity-20"
+            />
+          </div>
         )}
 
         {/* Date tag */}

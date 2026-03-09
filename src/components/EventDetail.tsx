@@ -129,8 +129,8 @@ export function EventDetail({ event }: EventDetailProps) {
       />
 
       {/* Hero image */}
-      <div className="relative aspect-[16/10] w-full bg-gradient-to-br from-riot-black/80 to-riot-black/40">
-        {imageUrl && (
+      <div className="relative aspect-[16/10] w-full bg-gradient-to-br from-riot-black to-riot-black/70">
+        {imageUrl ? (
           <Image
             src={imageUrl}
             alt={media?.alt ?? event.title}
@@ -139,6 +139,16 @@ export function EventDetail({ event }: EventDetailProps) {
             sizes="100vw"
             priority
           />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Image
+              src="/riot_logo.png"
+              alt=""
+              width={64}
+              height={64}
+              className="opacity-20"
+            />
+          </div>
         )}
 
         {/* Favorite button */}
