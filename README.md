@@ -95,12 +95,11 @@ The manifest is defined in `src/app/manifest.ts` using the Next.js Metadata API,
 
 ### Backend Integration
 
-The frontend is fully decoupled from `riot-backend`. All communication happens via REST API:
+The frontend uses the **Payload REST API SDK** (`@payloadcms/sdk`) to talk to `riot-backend`. The SDK is configured in `src/lib/sdk.ts` with `baseURL` from `NEXT_PUBLIC_API_URL` (supports a different hostname, e.g. staging). All collection types come from `src/lib/payload-types.ts`, which is synced from the backend—after changing the backend schema, copy `riot-backend/src/payload-types.ts` to `src/lib/payload-types.ts`.
 
-- **Auth**: `POST /api/users/login` returns a JWT; send it as `Authorization: Bearer <token>`
-- **Public data**: `/api/events`, `/api/venues`, `/api/categories`, `/api/organizers`
-- **Protected data**: `/api/saved-events`, draft events, user management
-- **User roles**: `admin`, `editor`, `attendee`
+- **Auth**: `sdk.login()`, `sdk.me()`, etc. (JWT or cookie per backend)
+- **Public data**: `getEvents`, `getEvent`, `getCategories`, `getVenue` in `src/lib/api.ts` (SDK `find` / `findByID`)
+- **Custom endpoints**: use `payload.request({ method, path, json })` for non-collection routes
 
 ### Future: Native Apps (Capacitor)
 

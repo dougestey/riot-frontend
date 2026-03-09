@@ -1,41 +1,17 @@
-import type {
-  Event,
-  Category,
-  Venue,
-  PaginatedResponse,
-} from './types';
+import type { Event, Category, Venue } from './payload-types';
+import { payload } from './sdk';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
-function getBaseUrl(): string {
-  if (typeof window !== 'undefined') return '';
-  return BACKEND_URL;
-}
-
-async function fetchAPI<T>(
-  endpoint: string,
-  params?: Record<string, string>
-): Promise<T> {
-  const base = getBaseUrl();
-  const url = new URL(`/api${endpoint}`, base || 'http://localhost');
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        url.searchParams.set(key, value);
-      }
-    });
-  }
-
-  const fetchUrl = base ? url.toString() : `${url.pathname}${url.search}`;
-  const res = await fetch(fetchUrl, {
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status} ${res.statusText}`);
-  }
-
-  return res.json();
+export interface PaginatedResponse<T> {
+  docs: T[];
+  totalDocs: number;
+  limit: number;
+  totalPages: number;
+  page: number;
+  pagingCounter: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
+  prevPage: number | null;
+  nextPage: number | null;
 }
 
 export interface GetEventsParams {
@@ -50,55 +26,69 @@ export interface GetEventsParams {
 export async function getEvents(
   params: GetEventsParams = {}
 ): Promise<PaginatedResponse<Event>> {
-  const query: Record<string, string> = {
-    'where[status][equals]': 'published',
-    sort: params.sort ?? '-startDateTime',
-    limit: String(params.limit ?? 20),
-    page: String(params.page ?? 1),
-    depth: '2',
+  const where: Record<string, { equals?: string | boolean; like?: string; in?: number[] }> = {
+    status: { equals: 'published' },
   };
-
   if (params.search) {
-    query['where[title][like]'] = params.search;
+    where.title = { like: params.search };
+  }
+  if (params.categoryId != null) {
+    where.categories = { in: [params.categoryId] };
+  }
+  if (params.featured === true) {
+    where.featured = { equals: true };
   }
 
-  if (params.categoryId) {
-    query['where[categories][in]'] = String(params.categoryId);
-  }
-
-  if (params.featured) {
-    query['where[featured][equals]'] = 'true';
-  }
-
-  return fetchAPI<PaginatedResponse<Event>>('/events', query);
-}
-
-export async function getEvent(
-  slug: string
-): Promise<Event | null> {
-  const result = await fetchAPI<PaginatedResponse<Event>>('/events', {
-    'where[slug][equals]': slug,
-    'where[status][equals]': 'published',
-    depth: '2',
-    limit: '1',
+  const result = await payload.find({
+    collection: 'events',
+    where,
+    sort: params.sort ?? '-startDateTime',
+    limit: params.limit ?? 20,
+    page: params.page ?? 1,
+    depth: 2,
   });
 
+  return {
+    docs: result.docs,
+    totalDocs: result.totalDocs,
+    limit: result.limit,
+    totalPages: result.totalPages,
+    page: result.page ?? 1,
+    pagingCounter: result.pagingCounter,
+    hasPrevPage: result.hasPrevPage,
+    hasNextPage: result.hasNextPage,
+    prevPage: result.prevPage ?? null,
+    nextPage: result.nextPage ?? null,
+  };
+}
+
+export async function getEvent(slug: string): Promise<Event | null> {
+  const result = await payload.find({
+    collection: 'events',
+    where: {
+      slug: { equals: slug },
+      status: { equals: 'published' },
+    },
+    limit: 1,
+    depth: 2,
+  });
   return result.docs[0] ?? null;
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const result = await fetchAPI<PaginatedResponse<Category>>('/categories', {
-    limit: '100',
+  const result = await payload.find({
+    collection: 'categories',
+    limit: 100,
     sort: 'name',
   });
-
   return result.docs;
 }
 
 export async function getVenue(id: number): Promise<Venue | null> {
-  try {
-    return await fetchAPI<Venue>(`/venues/${id}`);
-  } catch {
-    return null;
-  }
+  const doc = await payload.findByID({
+    collection: 'venues',
+    id,
+    disableErrors: true,
+  });
+  return doc ?? null;
 }
