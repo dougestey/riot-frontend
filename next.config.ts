@@ -10,8 +10,18 @@ const withPWA = withPWAInit({
   },
 });
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 const nextConfig: NextConfig = {
   turbopack: {},
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${BACKEND_URL}/api/:path*`,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

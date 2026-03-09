@@ -5,13 +5,19 @@ import type {
   PaginatedResponse,
 } from './types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+function getBaseUrl(): string {
+  if (typeof window !== 'undefined') return '';
+  return BACKEND_URL;
+}
 
 async function fetchAPI<T>(
   endpoint: string,
   params?: Record<string, string>
 ): Promise<T> {
-  const url = new URL(`/api${endpoint}`, API_URL);
+  const base = getBaseUrl();
+  const url = new URL(`/api${endpoint}`, base || 'http://localhost');
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== '') {
@@ -20,7 +26,8 @@ async function fetchAPI<T>(
     });
   }
 
-  const res = await fetch(url.toString(), {
+  const fetchUrl = base ? url.toString() : `${url.pathname}${url.search}`;
+  const res = await fetch(fetchUrl, {
     next: { revalidate: 60 },
   });
 
