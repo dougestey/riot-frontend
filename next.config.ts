@@ -12,6 +12,18 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.riotevents.app',
+      },
+    ],
+  },
 };
 
 export default withPWA(nextConfig);
