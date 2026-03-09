@@ -1,16 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Page,
   Navbar,
-  Block,
-  BlockTitle,
   Toolbar,
   TabbarLink,
   Icon,
+  Preloader,
+  Block,
 } from 'konsta/react';
+import { getEvents } from '@/lib/api';
+import type { Event } from '@/lib/types';
+import { EventCard } from './EventCard';
+import { SearchBar } from './SearchBar';
+import { CategoryFilter } from './CategoryFilter';
+
+// -- Tab icons --
 
 function CalendarIcon({ active }: { active: boolean }) {
   return (
@@ -33,7 +40,7 @@ function CalendarIcon({ active }: { active: boolean }) {
   );
 }
 
-function SearchIcon({ active }: { active: boolean }) {
+function SearchTabIcon({ active }: { active: boolean }) {
   return (
     <svg
       width="24"
@@ -91,7 +98,7 @@ function UserIcon({ active }: { active: boolean }) {
 
 const iconMap = {
   events: CalendarIcon,
-  search: SearchIcon,
+  search: SearchTabIcon,
   saved: HeartIcon,
   profile: UserIcon,
 } as const;
@@ -113,6 +120,84 @@ const navbarColors = {
 const tabbarColors = {
   bgIos: 'bg-riot-black',
 };
+
+// -- Events Feed --
+
+function EventsFeed() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+
+  const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getEvents({
+        search: search || undefined,
+        categoryId: categoryId ?? undefined,
+      });
+      setEvents(result.docs);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load events');
+    } finally {
+      setLoading(false);
+    }
+  }, [search, categoryId]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  const handleSearch = useCallback((query: string) => {
+    setSearch(query);
+  }, []);
+
+  return (
+    <div className="space-y-4 px-4 pt-4 pb-24">
+      <SearchBar onSearch={handleSearch} />
+      <CategoryFilter
+        activeCategoryId={categoryId}
+        onSelect={setCategoryId}
+      />
+
+      {loading && (
+        <div className="flex justify-center py-12">
+          <Preloader />
+        </div>
+      )}
+
+      {error && (
+        <Block strong inset className="!bg-red-50">
+          <p className="text-sm text-red-600">{error}</p>
+        </Block>
+      )}
+
+      {!loading && !error && events.length === 0 && (
+        <div className="py-12 text-center">
+          <p className="text-riot-text-secondary">No upcoming events</p>
+        </div>
+      )}
+
+      {!loading &&
+        !error &&
+        events.map((event) => <EventCard key={event.id} event={event} />)}
+    </div>
+  );
+}
+
+// -- Placeholder tabs --
+
+function PlaceholderTab({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center px-4 pt-20 pb-24">
+      <p className="text-riot-text-secondary">{label}</p>
+    </div>
+  );
+}
+
+// -- Main screen --
 
 export function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabId>('events');
@@ -137,10 +222,14 @@ export function HomeScreen() {
         }
       />
 
-      <BlockTitle>{tabs.find((t) => t.id === activeTab)?.label}</BlockTitle>
-      <Block strong inset>
-        <p>Welcome to RIOT. Discover events near you.</p>
-      </Block>
+      {activeTab === 'events' && <EventsFeed />}
+      {activeTab === 'search' && <PlaceholderTab label="Search coming soon" />}
+      {activeTab === 'saved' && (
+        <PlaceholderTab label="Sign in to see saved events" />
+      )}
+      {activeTab === 'profile' && (
+        <PlaceholderTab label="Sign in to view your profile" />
+      )}
 
       <Toolbar
         tabbar
