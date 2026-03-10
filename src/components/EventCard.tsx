@@ -49,7 +49,10 @@ export function EventCard({ event }: EventCardProps) {
   const isPostponed = event.status === 'postponed';
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <Link
+      href={`/events/${event.slug}`}
+      className="block overflow-hidden rounded-2xl bg-white shadow-sm"
+    >
       {/* Image + date tag + favorite */}
       <div className="relative aspect-[16/9] bg-gradient-to-br from-riot-black to-riot-black/70">
         {imageUrl ? (
@@ -86,6 +89,7 @@ export function EventCard({ event }: EventCardProps) {
         <button
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             setSaved(!saved);
           }}
           className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm"
@@ -120,10 +124,7 @@ export function EventCard({ event }: EventCardProps) {
       </div>
 
       {/* Content */}
-      <Link
-        href={`/events/${event.slug}`}
-        className="block p-4"
-      >
+      <div className="p-4">
         <h3 className="font-display text-lg font-semibold leading-tight text-riot-text">
           {event.title}
         </h3>
@@ -148,7 +149,7 @@ export function EventCard({ event }: EventCardProps) {
             ))}
           </div>
         )}
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 }

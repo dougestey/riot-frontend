@@ -115,6 +115,8 @@ type TabId = (typeof tabs)[number]['id'];
 const navbarColors = {
   bgIos: 'bg-riot-black',
   textIos: 'text-white',
+  bgMaterial: 'bg-riot-black',
+  textMaterial: 'text-white',
 };
 
 const tabbarColors = {
@@ -154,37 +156,78 @@ function EventsFeed() {
     setSearch(query);
   }, []);
 
+  const monthGroups = !loading && !error
+    ? events.reduce<
+        {
+          monthLabel: string;
+          events: Event[];
+        }[]
+      >((groups, event) => {
+        const date = new Date(event.startDateTime);
+        const monthLabel = date.toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        });
+
+        const lastGroup = groups[groups.length - 1];
+        if (!lastGroup || lastGroup.monthLabel !== monthLabel) {
+          groups.push({ monthLabel, events: [event] });
+        } else {
+          lastGroup.events.push(event);
+        }
+
+        return groups;
+      }, [])
+    : [];
+
   return (
-    <div className="space-y-4 px-4 pt-6 pb-24">
-      <SearchBar onSearch={handleSearch} />
-      <CategoryFilter
-        activeCategoryId={categoryId}
-        onSelect={setCategoryId}
-      />
+    <div className="px-4 pt-6 pb-24 lg:pb-14">
+      <div className="mx-auto max-w-5xl space-y-4">
+        <SearchBar onSearch={handleSearch} />
+        <CategoryFilter
+          activeCategoryId={categoryId}
+          onSelect={setCategoryId}
+        />
 
-      {loading && (
-        <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <EventCardSkeleton key={i} />
-          ))}
-        </div>
-      )}
+        {loading && (
+          <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <EventCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
 
-      {error && (
-        <Block strong inset className="!bg-red-50">
-          <p className="text-sm text-red-600">{error}</p>
-        </Block>
-      )}
+        {error && (
+          <Block strong inset className="!bg-red-50">
+            <p className="text-sm text-red-600">{error}</p>
+          </Block>
+        )}
 
-      {!loading && !error && events.length === 0 && (
-        <div className="py-12 text-center">
-          <p className="text-riot-text-secondary">No upcoming events</p>
-        </div>
-      )}
+        {!loading && !error && events.length === 0 && (
+          <div className="py-12 text-center">
+            <p className="text-riot-text-secondary">No upcoming events</p>
+          </div>
+        )}
 
-      {!loading &&
-        !error &&
-        events.map((event) => <EventCard key={event.id} event={event} />)}
+        {!loading && !error && events.length > 0 && (
+          <div className="space-y-8">
+            {monthGroups.map((group) => (
+              <section key={group.monthLabel} className="space-y-4">
+                <div>
+                  <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary lg:text-sm">
+                    {group.monthLabel}
+                  </h2>
+                </div>
+                <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+                  {group.events.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -217,9 +260,32 @@ export function HomeScreen() {
               width={28}
               height={28}
             />
-            <span className="font-display text-lg font-bold uppercase tracking-wider text-white">
+            <span className="text-lg font-bold uppercase tracking-wider text-white [font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
               RIOT
             </span>
+          </div>
+        }
+        right={
+          <div className="hidden items-center gap-5 pr-2 lg:flex !bg-transparent !shadow-none !backdrop-blur-0">
+            {tabs.map((tab) => {
+              const TabIcon = iconMap[tab.id];
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1 !bg-transparent text-xs font-medium uppercase tracking-wide transition-colors ${
+                    isActive
+                      ? 'text-riot-pink'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  <TabIcon active={isActive} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         }
       />
@@ -237,7 +303,7 @@ export function HomeScreen() {
         tabbar
         tabbarLabels
         colors={tabbarColors}
-        className="left-0 bottom-0 fixed"
+        className="left-0 bottom-0 fixed lg:hidden"
       >
         {tabs.map((tab) => {
           const TabIcon = iconMap[tab.id];

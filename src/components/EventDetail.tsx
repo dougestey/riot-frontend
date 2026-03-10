@@ -79,6 +79,8 @@ function formatAddress(venue: Venue): string {
 const navbarColors = {
   bgIos: 'bg-riot-black',
   textIos: 'text-white',
+  bgMaterial: 'bg-riot-black',
+  textMaterial: 'text-white',
 };
 
 interface EventDetailProps {
@@ -128,51 +130,52 @@ export function EventDetail({ event }: EventDetailProps) {
         }
       />
 
-      {/* Hero image */}
-      <div className="relative aspect-[16/10] w-full bg-gradient-to-br from-riot-black to-riot-black/70">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={media?.alt ?? event.title}
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
+      <div className="px-4 pt-4 pb-28 lg:pt-6">
+        {/* Hero image */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-riot-black to-riot-black/70 lg:mx-auto lg:max-w-5xl lg:aspect-[16/9]">
+          {imageUrl ? (
             <Image
-              src="/riot_logo.png"
-              alt=""
-              width={64}
-              height={64}
-              className="opacity-20"
+              src={imageUrl}
+              alt={media?.alt ?? event.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 960px"
+              priority
             />
-          </div>
-        )}
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Image
+                src="/riot_logo.png"
+                alt=""
+                width={64}
+                height={64}
+                className="opacity-20"
+              />
+            </div>
+          )}
 
-        {/* Favorite button */}
-        <button
-          onClick={() => setSaved(!saved)}
-          className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm"
-          aria-label={saved ? 'Remove from saved' : 'Save event'}
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill={saved ? '#E91E63' : 'none'}
-            stroke={saved ? '#E91E63' : '#ffffff'}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          {/* Favorite button */}
+          <button
+            onClick={() => setSaved(!saved)}
+            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm lg:top-6"
+            aria-label={saved ? 'Remove from saved' : 'Save event'}
           >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
-      </div>
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill={saved ? '#E91E63' : 'none'}
+              stroke={saved ? '#E91E63' : '#ffffff'}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
+        </div>
 
-      <div className="px-4 pt-5 pb-28">
+        <div className="mx-auto mt-5 max-w-5xl">
         {/* Status badge */}
         {(isCancelled || isPostponed) && (
           <div className="mb-3">
@@ -364,19 +367,20 @@ export function EventDetail({ event }: EventDetailProps) {
           </div>
         )}
 
-        {/* Actions */}
-        {event.website && (
-          <div className="mt-6">
-            <a
-              href={event.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
-            >
-              Visit Website
-            </a>
-          </div>
-        )}
+          {/* Actions */}
+          {event.website && (
+            <div className="mt-6">
+              <a
+                href={event.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
+              >
+                Visit Website
+              </a>
+            </div>
+          )}
+        </div>
       </div>
     </Page>
   );
