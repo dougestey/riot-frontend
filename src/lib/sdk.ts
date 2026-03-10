@@ -1,8 +1,22 @@
 import { PayloadSDK } from '@payloadcms/sdk';
 import type { Config } from './payload-types';
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// 1. Determine the Base URL based on where the code is executing
+const getBaseUrl = () => {
+  // If we're on the server (SSR/Server Components), use the Internal Docker Network
+  if (typeof window === 'undefined') {
+    // Falls back to NEXT_PUBLIC if INTERNAL is missing
+    return (
+      process.env.INTERNAL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:3000'
+    );
+  }
+  // If we're in the browser (Client Components), use the Public URL
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+};
+
+const BACKEND_URL = getBaseUrl();
 const baseURL = `${BACKEND_URL.replace(/\/$/, '')}/api`;
 
 function createFetchWithRevalidate(): typeof fetch {
