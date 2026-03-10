@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
-import { Page, Navbar } from 'konsta/react';
+import { Page, Navbar, Toolbar, TabbarLink, Icon } from 'konsta/react';
 import { LexicalRenderer } from '@/lib/lexical';
 import type { Event, Media, Venue, Category, Organizer } from '@/lib/types';
 
@@ -169,6 +169,10 @@ function formatAddress(venue: Venue): string {
   return parts.join(', ');
 }
 
+const tabbarColors = {
+  bgIos: 'bg-riot-black',
+};
+
 const navbarColors = {
   bgIos: 'bg-riot-black',
   textIos: 'text-white',
@@ -244,7 +248,8 @@ export function EventDetail({ event }: EventDetailProps) {
       />
 
       <div
-        className={`main-content-below-navbar pt-4 px-4 lg:pt-8 ${event.website ? 'pb-44 lg:pb-28' : 'pb-28'}`}
+        className={`px-4 lg:pt-8 ${event.website ? 'pb-36 lg:pb-28' : 'pb-28'}`}
+        style={{ paddingTop: 'max(88px, calc(64px + env(safe-area-inset-top, 24px)))' }}
       >
         {/* Hero image (view-transition-name matches EventCard for shared-element morph) */}
         <div
@@ -498,12 +503,12 @@ export function EventDetail({ event }: EventDetailProps) {
                   Visit Website
                 </a>
               </div>
-              {/* Mobile: fixed bottom bar so CTA stays visible with long descriptions; clear tab bar */}
+              {/* Mobile: fixed above tab bar */}
               <div
-                className="fixed left-0 right-0 z-10 px-4 pt-3 pb-4 lg:hidden"
+                className="fixed left-0 right-0 z-10 px-4 pt-6 pb-4 lg:hidden"
                 style={{
                   bottom: 'max(5rem, calc(72px + env(safe-area-inset-bottom, 0px)))',
-                  background: 'linear-gradient(to top, var(--color-riot-black, #0a0a0a) 60%, transparent)',
+                  background: 'linear-gradient(to top, white 50%, transparent)',
                 }}
               >
                 <a
@@ -519,6 +524,36 @@ export function EventDetail({ event }: EventDetailProps) {
           )}
         </div>
       </div>
+
+      <Toolbar
+        tabbar
+        tabbarLabels
+        colors={tabbarColors}
+        className="left-0 bottom-0 fixed lg:hidden"
+      >
+        {tabs.map((tab) => {
+          const TabIcon = iconMap[tab.id];
+          const isEvents = tab.id === 'events';
+          return (
+            <TabbarLink
+              key={tab.id}
+              active={isEvents}
+              linkProps={{ href: '/' }}
+              component="a"
+              colors={{
+                textIos: 'text-white/60',
+                textActiveIos: 'text-riot-pink',
+              }}
+              label={tab.label}
+              icon={
+                <Icon>
+                  <TabIcon active={isEvents} />
+                </Icon>
+              }
+            />
+          );
+        })}
+      </Toolbar>
     </Page>
   );
 }
