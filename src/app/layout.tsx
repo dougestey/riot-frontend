@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Oswald } from 'next/font/google';
 import { Providers } from './providers';
+import { ViewTransitionsWrapper } from '@/components/ViewTransitionsWrapper';
 import './globals.css';
 
 const geistSans = Geist({
@@ -50,7 +51,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <ViewTransitionsWrapper>
+          <Providers>{children}</Providers>
+        </ViewTransitionsWrapper>
       </body>
     </html>
   );

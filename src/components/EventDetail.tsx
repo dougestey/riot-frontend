@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from 'next-view-transitions';
 import { Page, Navbar } from 'konsta/react';
 import { LexicalRenderer } from '@/lib/lexical';
 import type { Event, Media, Venue, Category, Organizer } from '@/lib/types';
@@ -243,8 +243,11 @@ export function EventDetail({ event }: EventDetailProps) {
       />
 
       <div className="px-4 pt-6 pb-28 lg:pt-8">
-        {/* Hero image */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-riot-black to-riot-black/70 lg:mx-auto lg:max-w-5xl lg:aspect-[16/9]">
+        {/* Hero image (view-transition-name matches EventCard for shared-element morph) */}
+        <div
+          className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-riot-black to-riot-black/70 lg:mx-auto lg:max-w-5xl lg:aspect-[16/9]"
+          style={{ viewTransitionName: `event-hero-${event.slug}` }}
+        >
           {imageUrl ? (
             <Image
               src={imageUrl}

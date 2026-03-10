@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { Page, Navbar, Toolbar, TabbarLink, Icon, Block } from 'konsta/react';
 import { getEvents } from '@/lib/api';
@@ -142,6 +142,8 @@ const tabs = [
 ] as const;
 
 type TabId = (typeof tabs)[number]['id'];
+
+const tabOrder: TabId[] = ['events', 'search', 'saved', 'profile'];
 
 const navbarColors = {
   bgIos: 'bg-riot-black',
@@ -323,6 +325,26 @@ export function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabId>('events');
   const [eventsResetKey, setEventsResetKey] = useState(0);
   const [searchFocusKey, setSearchFocusKey] = useState(0);
+  const [tabEntered, setTabEntered] = useState(true);
+  const [slideFromRight, setSlideFromRight] = useState(true);
+  const prevTabIndexRef = useRef(0);
+
+  const tabIndex = tabOrder.indexOf(activeTab);
+  useEffect(() => {
+    if (prevTabIndexRef.current !== tabIndex) {
+      setSlideFromRight(tabIndex > prevTabIndexRef.current);
+      prevTabIndexRef.current = tabIndex;
+      setTabEntered(false);
+    }
+  }, [tabIndex]);
+
+  useEffect(() => {
+    if (tabEntered) return;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setTabEntered(true));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [tabEntered, activeTab]);
 
   return (
     <Page>
@@ -379,18 +401,25 @@ export function HomeScreen() {
         }
       />
 
-      {activeTab === 'events' && (
-        <EventsFeed
-          resetKey={eventsResetKey}
-          onOpenSearch={() => {
-            setActiveTab('search');
-            setSearchFocusKey((k) => k + 1);
-          }}
-        />
-      )}
-      {activeTab === 'search' && <SearchScreen focusKey={searchFocusKey} />}
-      {activeTab === 'saved' && <SavedScreen />}
-      {activeTab === 'profile' && <ProfileScreen />}
+      <div className="overflow-hidden">
+        <div
+          key={activeTab}
+          className={`tab-pane-transition ${tabEntered ? 'translate-x-0 opacity-100' : slideFromRight ? 'translate-x-3 opacity-0' : '-translate-x-3 opacity-0'}`}
+        >
+          {activeTab === 'events' && (
+            <EventsFeed
+              resetKey={eventsResetKey}
+              onOpenSearch={() => {
+                setActiveTab('search');
+                setSearchFocusKey((k) => k + 1);
+              }}
+            />
+          )}
+          {activeTab === 'search' && <SearchScreen focusKey={searchFocusKey} />}
+          {activeTab === 'saved' && <SavedScreen />}
+          {activeTab === 'profile' && <ProfileScreen />}
+        </div>
+      </div>
 
       <Toolbar
         tabbar

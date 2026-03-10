@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from 'next-view-transitions';
 import type { Event, Media, Venue, Category } from '@/lib/types';
 
 function getMediaUrl(media: Event['featuredImage']): string | null {
@@ -53,8 +53,11 @@ export function EventCard({ event }: EventCardProps) {
       href={`/events/${event.slug}`}
       className="block overflow-hidden rounded-2xl bg-white shadow-sm"
     >
-      {/* Image + date tag + favorite */}
-      <div className="relative aspect-[16/9] bg-gradient-to-br from-riot-black to-riot-black/70">
+      {/* Image + date tag + favorite (view-transition-name for shared-element morph) */}
+      <div
+        className="relative aspect-[16/9] bg-gradient-to-br from-riot-black to-riot-black/70"
+        style={{ viewTransitionName: `event-hero-${event.slug}` }}
+      >
         {imageUrl ? (
           <Image
             src={imageUrl}
