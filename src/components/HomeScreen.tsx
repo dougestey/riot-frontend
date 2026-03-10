@@ -1,21 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import {
-  Page,
-  Navbar,
-  Toolbar,
-  TabbarLink,
-  Icon,
-  Block,
-} from 'konsta/react';
+import { Page, Navbar, Toolbar, TabbarLink, Icon, Block } from 'konsta/react';
 import { getEvents } from '@/lib/api';
 import type { Event } from '@/lib/types';
 import { EventCard } from './EventCard';
 import { EventCardSkeleton } from './EventCardSkeleton';
 import { SearchBar } from './SearchBar';
 import { CategoryFilter } from './CategoryFilter';
+import { SearchScreen } from './SearchScreen';
+import { SavedScreen } from './SavedScreen';
+import { ProfileScreen } from './ProfileScreen';
 
 // -- Tab icons --
 
@@ -32,10 +28,32 @@ function CalendarIcon({ active }: { active: boolean }) {
       strokeLinejoin="round"
       className={active ? 'text-riot-pink' : 'text-white'}
     >
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
+      <rect
+        x="3"
+        y="4"
+        width="18"
+        height="18"
+        rx="2"
+        ry="2"
+      />
+      <line
+        x1="16"
+        y1="2"
+        x2="16"
+        y2="6"
+      />
+      <line
+        x1="8"
+        y1="2"
+        x2="8"
+        y2="6"
+      />
+      <line
+        x1="3"
+        y1="10"
+        x2="21"
+        y2="10"
+      />
     </svg>
   );
 }
@@ -53,8 +71,17 @@ function SearchTabIcon({ active }: { active: boolean }) {
       strokeLinejoin="round"
       className={active ? 'text-riot-pink' : 'text-white'}
     >
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <circle
+        cx="11"
+        cy="11"
+        r="8"
+      />
+      <line
+        x1="21"
+        y1="21"
+        x2="16.65"
+        y2="16.65"
+      />
     </svg>
   );
 }
@@ -91,7 +118,11 @@ function UserIcon({ active }: { active: boolean }) {
       className={active ? 'text-riot-pink' : 'text-white'}
     >
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
+      <circle
+        cx="12"
+        cy="7"
+        r="4"
+      />
     </svg>
   );
 }
@@ -131,6 +162,7 @@ function EventsFeed() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [visibleCategoryIds, setVisibleCategoryIds] = useState<number[]>([]);
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);
@@ -156,29 +188,48 @@ function EventsFeed() {
     setSearch(query);
   }, []);
 
-  const monthGroups = !loading && !error
-    ? events.reduce<
-        {
-          monthLabel: string;
-          events: Event[];
-        }[]
-      >((groups, event) => {
-        const date = new Date(event.startDateTime);
-        const monthLabel = date.toLocaleDateString('en-US', {
-          month: 'long',
-          year: 'numeric',
+  useEffect(() => {
+    // Only update the visible category set when no specific category
+    // is selected, so tabbing through categories doesn't shrink the list.
+    if (categoryId === null) {
+      const ids = new Set<number>();
+      events.forEach((event) => {
+        event.categories?.forEach((cat) => {
+          if (typeof cat === 'number') {
+            ids.add(cat);
+          } else if (cat && typeof cat === 'object') {
+            ids.add(cat.id);
+          }
         });
+      });
+      setVisibleCategoryIds(Array.from(ids));
+    }
+  }, [events, categoryId]);
 
-        const lastGroup = groups[groups.length - 1];
-        if (!lastGroup || lastGroup.monthLabel !== monthLabel) {
-          groups.push({ monthLabel, events: [event] });
-        } else {
-          lastGroup.events.push(event);
-        }
+  const monthGroups =
+    !loading && !error
+      ? events.reduce<
+          {
+            monthLabel: string;
+            events: Event[];
+          }[]
+        >((groups, event) => {
+          const date = new Date(event.startDateTime);
+          const monthLabel = date.toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          });
 
-        return groups;
-      }, [])
-    : [];
+          const lastGroup = groups[groups.length - 1];
+          if (!lastGroup || lastGroup.monthLabel !== monthLabel) {
+            groups.push({ monthLabel, events: [event] });
+          } else {
+            lastGroup.events.push(event);
+          }
+
+          return groups;
+        }, [])
+      : [];
 
   return (
     <div className="px-4 pt-6 pb-24 lg:pb-14">
@@ -187,6 +238,9 @@ function EventsFeed() {
         <CategoryFilter
           activeCategoryId={categoryId}
           onSelect={setCategoryId}
+          allowedCategoryIds={
+            events.length > 0 ? visibleCategoryIds : undefined
+          }
         />
 
         {loading && (
@@ -198,7 +252,11 @@ function EventsFeed() {
         )}
 
         {error && (
-          <Block strong inset className="!bg-red-50">
+          <Block
+            strong
+            inset
+            className="!bg-red-50"
+          >
             <p className="text-sm text-red-600">{error}</p>
           </Block>
         )}
@@ -212,7 +270,10 @@ function EventsFeed() {
         {!loading && !error && events.length > 0 && (
           <div className="space-y-8">
             {monthGroups.map((group) => (
-              <section key={group.monthLabel} className="space-y-4">
+              <section
+                key={group.monthLabel}
+                className="space-y-4"
+              >
                 <div>
                   <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary lg:text-sm">
                     {group.monthLabel}
@@ -220,7 +281,10 @@ function EventsFeed() {
                 </div>
                 <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   {group.events.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                    />
                   ))}
                 </div>
               </section>
@@ -253,7 +317,11 @@ export function HomeScreen() {
         colors={navbarColors}
         centerTitle={false}
         title={
-          <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab('events')}
+            className="flex items-center gap-2"
+          >
             <Image
               src="/riot_logo.png"
               alt="RIOT"
@@ -263,7 +331,7 @@ export function HomeScreen() {
             <span className="text-lg font-bold uppercase tracking-wider text-white [font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
               RIOT
             </span>
-          </div>
+          </button>
         }
         right={
           <div className="hidden items-center gap-5 pr-2 lg:flex !bg-transparent !shadow-none !backdrop-blur-0">
@@ -291,13 +359,9 @@ export function HomeScreen() {
       />
 
       {activeTab === 'events' && <EventsFeed />}
-      {activeTab === 'search' && <PlaceholderTab label="Search coming soon" />}
-      {activeTab === 'saved' && (
-        <PlaceholderTab label="Sign in to see saved events" />
-      )}
-      {activeTab === 'profile' && (
-        <PlaceholderTab label="Sign in to view your profile" />
-      )}
+      {activeTab === 'search' && <SearchScreen />}
+      {activeTab === 'saved' && <SavedScreen />}
+      {activeTab === 'profile' && <ProfileScreen />}
 
       <Toolbar
         tabbar

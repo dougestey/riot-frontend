@@ -125,12 +125,14 @@ export function EventDetail({ event }: EventDetailProps) {
             >
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Events
+            <span className="[font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
+              Events
+            </span>
           </Link>
         }
       />
 
-      <div className="px-4 pt-4 pb-28 lg:pt-6">
+      <div className="px-4 pt-6 pb-28 lg:pt-8">
         {/* Hero image */}
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-riot-black to-riot-black/70 lg:mx-auto lg:max-w-5xl lg:aspect-[16/9]">
           {imageUrl ? (
@@ -176,196 +178,196 @@ export function EventDetail({ event }: EventDetailProps) {
         </div>
 
         <div className="mx-auto mt-5 max-w-5xl">
-        {/* Status badge */}
-        {(isCancelled || isPostponed) && (
-          <div className="mb-3">
-            <span
-              className={`inline-block rounded px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white ${
-                isCancelled ? 'bg-red-600' : 'bg-amber-600'
-              }`}
-            >
-              {isCancelled ? 'Cancelled' : 'Postponed'}
-            </span>
-          </div>
-        )}
-
-        {/* Title */}
-        <h1 className="font-display text-2xl font-bold leading-tight text-riot-text">
-          {event.title}
-        </h1>
-
-        {/* Date & Time */}
-        <div className="mt-4 flex gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#E91E63"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect
-                x="3"
-                y="4"
-                width="18"
-                height="18"
-                rx="2"
-                ry="2"
-              />
-              <line
-                x1="16"
-                y1="2"
-                x2="16"
-                y2="6"
-              />
-              <line
-                x1="8"
-                y1="2"
-                x2="8"
-                y2="6"
-              />
-              <line
-                x1="3"
-                y1="10"
-                x2="21"
-                y2="10"
-              />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-riot-text">{date}</p>
-            <p className="text-sm text-riot-text-secondary">{time}</p>
-          </div>
-        </div>
-
-        {/* Venue */}
-        {venue && (
-          <div className="mt-4 flex gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#E91E63"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle
-                  cx="12"
-                  cy="10"
-                  r="3"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-riot-text">
-                {venue.name}
-              </p>
-              {venue.address && (
-                <p className="text-sm text-riot-text-secondary">
-                  {formatAddress(venue)}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Virtual event */}
-        {event.isVirtual && event.virtualUrl && (
-          <div className="mt-4 flex gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#E91E63"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-            </div>
-            <div className="flex items-center">
-              <a
-                href={event.virtualUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-semibold text-riot-pink"
-              >
-                Join Virtual Event
-              </a>
-            </div>
-          </div>
-        )}
-
-        {/* Organizers */}
-        {organizers.length > 0 && (
-          <div className="mt-4 flex gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#E91E63"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle
-                  cx="9"
-                  cy="7"
-                  r="4"
-                />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-riot-text">
-                {organizers.map((o) => o.name).join(', ')}
-              </p>
-              <p className="text-sm text-riot-text-secondary">Organizer</p>
-            </div>
-          </div>
-        )}
-
-        {/* Categories */}
-        {categories.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-1.5">
-            {categories.map((cat) => (
+          {/* Status badge */}
+          {(isCancelled || isPostponed) && (
+            <div className="mb-3">
               <span
-                key={cat.id}
-                className="rounded bg-riot-pink px-3 py-1 text-xs font-medium uppercase tracking-wide text-white"
+                className={`inline-block rounded px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white ${
+                  isCancelled ? 'bg-red-600' : 'bg-amber-600'
+                }`}
               >
-                {cat.name}
+                {isCancelled ? 'Cancelled' : 'Postponed'}
               </span>
-            ))}
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* Description */}
-        {event.description && (
-          <div className="mt-6">
-            <h2 className="font-display mb-2 text-lg font-semibold text-riot-text">
-              About
-            </h2>
-            <LexicalRenderer
-              content={event.description}
-              className="text-sm leading-relaxed text-riot-text-secondary"
-            />
+          {/* Title */}
+          <h1 className="font-display text-2xl font-bold leading-tight text-riot-text">
+            {event.title}
+          </h1>
+
+          {/* Date & Time */}
+          <div className="mt-4 flex gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#E91E63"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect
+                  x="3"
+                  y="4"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  ry="2"
+                />
+                <line
+                  x1="16"
+                  y1="2"
+                  x2="16"
+                  y2="6"
+                />
+                <line
+                  x1="8"
+                  y1="2"
+                  x2="8"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  y1="10"
+                  x2="21"
+                  y2="10"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-riot-text">{date}</p>
+              <p className="text-sm text-riot-text-secondary">{time}</p>
+            </div>
           </div>
-        )}
+
+          {/* Venue */}
+          {venue && (
+            <div className="mt-4 flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E91E63"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle
+                    cx="12"
+                    cy="10"
+                    r="3"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-riot-text">
+                  {venue.name}
+                </p>
+                {venue.address && (
+                  <p className="text-sm text-riot-text-secondary">
+                    {formatAddress(venue)}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Virtual event */}
+          {event.isVirtual && event.virtualUrl && (
+            <div className="mt-4 flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E91E63"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              </div>
+              <div className="flex items-center">
+                <a
+                  href={event.virtualUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-riot-pink"
+                >
+                  Join Virtual Event
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Organizers */}
+          {organizers.length > 0 && (
+            <div className="mt-4 flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E91E63"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-riot-text">
+                  {organizers.map((o) => o.name).join(', ')}
+                </p>
+                <p className="text-sm text-riot-text-secondary">Organizer</p>
+              </div>
+            </div>
+          )}
+
+          {/* Categories */}
+          {categories.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-1.5">
+              {categories.map((cat) => (
+                <span
+                  key={cat.id}
+                  className="rounded bg-riot-pink px-3 py-1 text-xs font-medium uppercase tracking-wide text-white"
+                >
+                  {cat.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Description */}
+          {event.description && (
+            <div className="mt-6">
+              <h2 className="font-display mb-2 text-lg font-semibold text-riot-text">
+                About
+              </h2>
+              <LexicalRenderer
+                content={event.description}
+                className="text-sm leading-relaxed text-riot-text-secondary"
+              />
+            </div>
+          )}
 
           {/* Actions */}
           {event.website && (
