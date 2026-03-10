@@ -54,7 +54,9 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   const iconNode =
-    typeof icon === 'string' ? iconPresets[icon] ?? iconPresets.search : icon;
+    typeof icon === 'string'
+      ? iconPresets[icon as keyof typeof iconPresets] ?? iconPresets.search
+      : icon;
 
   return (
     <div className="flex min-h-[calc(100vh-112px)] flex-col items-center justify-center px-6 pb-24 pt-16 lg:min-h-[calc(100vh-96px)]">
