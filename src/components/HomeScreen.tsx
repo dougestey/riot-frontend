@@ -319,7 +319,7 @@ function EventsFeed({
                     className="space-y-4"
                   >
                     <div>
-                      <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary lg:text-sm">
+                      <h2 className="text-xs font-semibold uppercase tracking-[0.21em] text-riot-text-secondary lg:text-sm">
                         {group.monthLabel}
                       </h2>
                     </div>
@@ -400,7 +400,7 @@ export function HomeScreen() {
               width={28}
               height={28}
             />
-            <span className="text-lg font-bold uppercase tracking-wider text-white [font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
+            <span className="font-brand text-lg font-bold uppercase tracking-wider text-white">
               RIOT
             </span>
           </button>

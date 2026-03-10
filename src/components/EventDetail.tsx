@@ -219,8 +219,8 @@ export function EventDetail({ event }: EventDetailProps) {
             >
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            <span className="text-lg font-bold uppercase tracking-wider text-white [font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
-              Events
+            <span className="font-brand text-lg font-bold uppercase tracking-wider text-white">
+              Event Details
             </span>
           </Link>
         }
@@ -243,7 +243,9 @@ export function EventDetail({ event }: EventDetailProps) {
         }
       />
 
-      <div className="main-content-below-navbar px-4 pb-28 lg:pt-8">
+      <div
+        className={`main-content-below-navbar pt-4 px-4 lg:pt-8 ${event.website ? 'pb-44 lg:pb-28' : 'pb-28'}`}
+      >
         {/* Hero image (view-transition-name matches EventCard for shared-element morph) */}
         <div
           className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-riot-black to-riot-black/70 lg:mx-auto lg:max-w-5xl lg:aspect-[16/9]"
@@ -483,18 +485,37 @@ export function EventDetail({ event }: EventDetailProps) {
             </div>
           )}
 
-          {/* Actions */}
+          {/* Actions: inline on desktop, floating bar on mobile */}
           {event.website && (
-            <div className="mt-6">
-              <a
-                href={event.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
+            <>
+              <div className="mt-6 hidden lg:block">
+                <a
+                  href={event.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
+                >
+                  Visit Website
+                </a>
+              </div>
+              {/* Mobile: fixed bottom bar so CTA stays visible with long descriptions; clear tab bar */}
+              <div
+                className="fixed left-0 right-0 z-10 px-4 pt-3 pb-4 lg:hidden"
+                style={{
+                  bottom: 'max(5rem, calc(72px + env(safe-area-inset-bottom, 0px)))',
+                  background: 'linear-gradient(to top, var(--color-riot-black, #0a0a0a) 60%, transparent)',
+                }}
               >
-                Visit Website
-              </a>
-            </div>
+                <a
+                  href={event.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
+                >
+                  Visit Website
+                </a>
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -68,7 +68,7 @@ export default function RootLayout({
               className="shrink-0"
               priority
             />
-            <span className="text-xl font-bold uppercase tracking-wider text-white [font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
+            <span className="font-brand text-xl font-bold uppercase tracking-wider text-white">
               RIOT
             </span>
           </div>

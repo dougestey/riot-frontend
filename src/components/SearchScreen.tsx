@@ -193,7 +193,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
 
         {!hasQuery && !categoryId && recent.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.21em] text-riot-text-secondary">
               Recent Searches
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -232,7 +232,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
 
             {showResults && (
               <section className="space-y-3">
-                <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary">
+                <h2 className="text-xs font-semibold uppercase tracking-[0.21em] text-riot-text-secondary">
                   Results
                 </h2>
                 <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
