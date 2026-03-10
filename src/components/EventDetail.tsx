@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
 import { Page, Navbar, Toolbar, TabbarLink, Icon } from 'konsta/react';
 import { LexicalRenderer } from '@/lib/lexical';
 import type { Event, Media, Venue, Category, Organizer } from '@/lib/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 // -- Desktop nav icons (mirrors HomeScreen) --
 
@@ -185,7 +185,8 @@ interface EventDetailProps {
 }
 
 export function EventDetail({ event }: EventDetailProps) {
-  const [saved, setSaved] = useState(false);
+  const { savedEventIds, toggleSaveEvent } = useAuth();
+  const saved = savedEventIds.has(event.id);
   const media = getMedia(event.featuredImage);
   const imageUrl = media?.sizes?.feature?.url ?? media?.url ?? null;
   const venue = getVenue(event.venue);
@@ -279,7 +280,7 @@ export function EventDetail({ event }: EventDetailProps) {
 
           {/* Favorite button */}
           <button
-            onClick={() => setSaved(!saved)}
+            onClick={() => toggleSaveEvent(event.id)}
             className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm lg:top-6"
             aria-label={saved ? 'Remove from saved' : 'Save event'}
           >

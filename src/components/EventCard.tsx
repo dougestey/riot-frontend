@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
 import type { Event, Media, Venue, Category } from '@/lib/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 function getMediaUrl(media: Event['featuredImage']): string | null {
   if (!media || typeof media === 'number') return null;
@@ -39,7 +39,8 @@ interface EventCardProps {
 }
 
 export function EventCard({ event }: EventCardProps) {
-  const [saved, setSaved] = useState(false);
+  const { savedEventIds, toggleSaveEvent } = useAuth();
+  const saved = savedEventIds.has(event.id);
   const imageUrl = getMediaUrl(event.featuredImage);
   const imageAlt = getMediaAlt(event.featuredImage);
   const venue = getVenue(event.venue);
@@ -93,7 +94,7 @@ export function EventCard({ event }: EventCardProps) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            setSaved(!saved);
+            toggleSaveEvent(event.id);
           }}
           className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm"
           aria-label={saved ? 'Remove from saved' : 'Save event'}
