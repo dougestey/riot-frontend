@@ -23,5 +23,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return <App theme={theme}>{children}</App>;
+  return (
+    <App theme={theme} dark iosHoverHighlight={false}>
+      {children}
+    </App>
+  );
 }

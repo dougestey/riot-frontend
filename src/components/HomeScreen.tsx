@@ -221,6 +221,31 @@ function EventsFeed({
     setCategoryId(null);
   }, [resetKey]);
 
+  // Direction-aware slide when category changes (index = position in filter pills: All=0, then visibleCategoryIds order)
+  const categoryIndex =
+    categoryId === null
+      ? 0
+      : 1 + visibleCategoryIds.indexOf(categoryId);
+  const prevCategoryIndexRef = useRef(categoryIndex);
+  const [categorySlideFromRight, setCategorySlideFromRight] = useState(true);
+  const [categoryContentEntered, setCategoryContentEntered] = useState(true);
+
+  useEffect(() => {
+    if (prevCategoryIndexRef.current !== categoryIndex) {
+      setCategorySlideFromRight(categoryIndex > prevCategoryIndexRef.current);
+      prevCategoryIndexRef.current = categoryIndex;
+      setCategoryContentEntered(false);
+    }
+  }, [categoryIndex]);
+
+  useEffect(() => {
+    if (categoryContentEntered) return;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setCategoryContentEntered(true));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [categoryContentEntered]);
+
   const monthGroups =
     !loading && !error
       ? events.reduce<
@@ -256,54 +281,61 @@ function EventsFeed({
           allowedCategoryIds={events.length > 0 && visibleCategoryIds.length > 0 ? visibleCategoryIds : undefined}
         />
 
-        {loading && (
-          <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <EventCardSkeleton key={i} />
-            ))}
-          </div>
-        )}
-
-        {error && (
-          <Block
-            strong
-            inset
-            className="!bg-red-50"
+        <div className="overflow-hidden">
+          <div
+            key={`feed-${categoryId ?? 'all'}`}
+            className={`category-content-transition ${categoryContentEntered ? 'translate-x-0 opacity-100' : categorySlideFromRight ? 'translate-x-4 opacity-0' : '-translate-x-4 opacity-0'}`}
           >
-            <p className="text-sm text-red-600">{error}</p>
-          </Block>
-        )}
+            {loading && (
+              <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <EventCardSkeleton key={i} />
+                ))}
+              </div>
+            )}
 
-        {!loading && !error && events.length === 0 && (
-          <div className="py-12 text-center">
-            <p className="text-riot-text-secondary">No upcoming events</p>
-          </div>
-        )}
-
-        {!loading && !error && events.length > 0 && (
-          <div className="space-y-8">
-            {monthGroups.map((group) => (
-              <section
-                key={group.monthLabel}
-                className="space-y-4"
+            {error && (
+              <Block
+                strong
+                inset
+                className="!bg-red-50"
               >
-                <div>
-                  <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary lg:text-sm">
-                    {group.monthLabel}
-                  </h2>
-                </div>
-                <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-                  {group.events.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
+                <p className="text-sm text-red-600">{error}</p>
+              </Block>
+            )}
+
+            {!loading && !error && events.length === 0 && (
+              <div className="py-12 text-center">
+                <p className="text-riot-text-secondary">No upcoming events</p>
+              </div>
+            )}
+
+            {!loading && !error && events.length > 0 && (
+              <div className="space-y-8">
+                {monthGroups.map((group) => (
+                  <section
+                    key={group.monthLabel}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary lg:text-sm">
+                        {group.monthLabel}
+                      </h2>
+                    </div>
+                    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+                      {group.events.map((event) => (
+                        <EventCard
+                          key={event.id}
+                          event={event}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -349,6 +381,7 @@ export function HomeScreen() {
   return (
     <Page>
       <Navbar
+        className="riot-navbar"
         colors={navbarColors}
         centerTitle={false}
         title={

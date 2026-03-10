@@ -14,6 +14,11 @@
   --color-riot-text-secondary: #5d5d5d;
 }
 
+/* Dark body so view-transition crossfade never reveals a white background */
+body {
+  background-color: var(--color-riot-black, #0a0a0a);
+}
+
 /* View Transitions API: route and shared-element transitions */
 @supports (view-transition-name: none) {
   ::view-transition-old(root) {
@@ -54,4 +59,36 @@
   .tab-pane-transition {
     transition-duration: 0.01ms;
   }
+}
+
+/* Category filter content slide (EventsFeed / SearchScreen) */
+.category-content-transition {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .category-content-transition {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* Navbar: exclude from view-transition so it never fades/flashes on route change */
+.riot-navbar {
+  view-transition-name: riot-navbar;
+  --color-ios-hover-highlight: transparent;
+  --color-ios-light-glass: transparent;
+  --color-ios-dark-glass: transparent;
+  --shadow-ios-light-glass: none;
+  --shadow-ios-dark-glass: none;
+  -webkit-tap-highlight-color: transparent;
+}
+@supports (view-transition-name: none) {
+  ::view-transition-old(riot-navbar),
+  ::view-transition-new(riot-navbar) {
+    animation: none;
+  }
+}
+.riot-navbar button:focus-visible,
+.riot-navbar a:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
 }

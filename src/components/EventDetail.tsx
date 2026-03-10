@@ -199,6 +199,7 @@ export function EventDetail({ event }: EventDetailProps) {
   return (
     <Page>
       <Navbar
+        className="riot-navbar"
         colors={navbarColors}
         centerTitle={false}
         title={
