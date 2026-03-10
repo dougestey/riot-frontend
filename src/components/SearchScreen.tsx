@@ -18,7 +18,9 @@ function loadRecentSearches(): string[] {
     const raw = window.localStorage.getItem(RECENT_SEARCHES_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as string[]).slice(0, MAX_RECENT_SEARCHES) : [];
+    return Array.isArray(parsed)
+      ? (parsed as string[]).slice(0, MAX_RECENT_SEARCHES)
+      : [];
   } catch {
     return [];
   }
@@ -88,7 +90,9 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
         }
       } catch (err) {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Failed to search events');
+        setError(
+          err instanceof Error ? err.message : 'Failed to search events'
+        );
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -202,7 +206,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
                 <button
                   key={term}
                   type="button"
-                  className="rounded-full border border-riot-pink/40 px-3 py-1 text-xs font-semibold text-riot-pink"
+                  className="rounded border border-riot-pink/40 px-3 py-1 text-xs font-semibold text-riot-pink"
                   onClick={() => setQuery(term)}
                 >
                   {term}
@@ -241,7 +245,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
                   icon="search"
                   action={{ label: 'Clear search', onClear: handleClear }}
                 />
-            )}
+              )}
 
             {showResults && events.length > 0 && (
               <section className="space-y-3">
@@ -250,7 +254,10 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
                 </h2>
                 <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   {events.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                    />
                   ))}
                 </div>
               </section>
@@ -272,4 +279,3 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
     </div>
   );
 }
-
