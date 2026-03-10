@@ -146,6 +146,7 @@ export function SearchScreen() {
                 key={searchInputKey}
                 onSearch={handleSearch}
                 placeholder={placeholderText}
+                initialValue={query}
               />
             </div>
             {(hasQuery || categoryId || events.length > 0) && (

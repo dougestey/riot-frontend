@@ -5,14 +5,20 @@ import { useState, useEffect, useRef } from 'react';
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
+  initialValue?: string;
 }
 
 export function SearchBar({
   onSearch,
   placeholder = 'Search events...',
+  initialValue = '',
 }: SearchBarProps) {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(initialValue);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   useEffect(() => {
     if (debounceRef.current) {
