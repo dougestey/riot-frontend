@@ -218,7 +218,7 @@ export function EventDetail({ event }: EventDetailProps) {
             >
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            <span className="[font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
+            <span className="text-lg font-bold uppercase tracking-wider text-white [font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
               Events
             </span>
           </Link>
