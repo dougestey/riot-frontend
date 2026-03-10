@@ -26,7 +26,7 @@ export function CategoryFilter({
   }, []);
 
   const visibleCategories =
-    allowedCategoryIds && allowedCategoryIds.length > 0
+    allowedCategoryIds !== undefined
       ? categories.filter((cat) => allowedCategoryIds.includes(cat.id))
       : categories;
 
