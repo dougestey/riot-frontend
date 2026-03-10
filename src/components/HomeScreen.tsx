@@ -9,6 +9,7 @@ import { EventCard } from './EventCard';
 import { EventCardSkeleton } from './EventCardSkeleton';
 import { SearchBar } from './SearchBar';
 import { CategoryFilter } from './CategoryFilter';
+import { EmptyState } from './EmptyState';
 import { SearchScreen } from './SearchScreen';
 import { SavedScreen } from './SavedScreen';
 import { ProfileScreen } from './ProfileScreen';
@@ -279,7 +280,7 @@ function EventsFeed({
         <CategoryFilter
           activeCategoryId={categoryId}
           onSelect={setCategoryId}
-          allowedCategoryIds={events.length > 0 && visibleCategoryIds.length > 0 ? visibleCategoryIds : undefined}
+          allowedCategoryIds={search.trim() ? visibleCategoryIds : undefined}
         />
 
         <div className="overflow-hidden">
@@ -306,9 +307,26 @@ function EventsFeed({
             )}
 
             {!loading && !error && events.length === 0 && (
-              <div className="py-12 text-center">
-                <p className="text-riot-text-secondary">No upcoming events</p>
-              </div>
+              <EmptyState
+                title={search.trim() || categoryId ? 'No events match your search' : 'No upcoming events'}
+                description={
+                  search.trim() || categoryId
+                    ? 'Try a different search or category.'
+                    : 'Check back later for new events.'
+                }
+                icon="calendar"
+                action={
+                  search.trim() || categoryId
+                    ? {
+                        label: 'Clear search',
+                        onClear: () => {
+                          setSearch('');
+                          setCategoryId(null);
+                        },
+                      }
+                    : undefined
+                }
+              />
             )}
 
             {!loading && !error && events.length > 0 && (

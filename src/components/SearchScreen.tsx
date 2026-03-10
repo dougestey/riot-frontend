@@ -5,6 +5,7 @@ import type { Category, Event } from '@/lib/types';
 import { getEvents } from '@/lib/api';
 import { SearchBar } from './SearchBar';
 import { CategoryFilter } from './CategoryFilter';
+import { EmptyState } from './EmptyState';
 import { EventCard } from './EventCard';
 import { EventCardSkeleton } from './EventCardSkeleton';
 
@@ -187,7 +188,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
           <CategoryFilter
             activeCategoryId={categoryId}
             onSelect={setCategoryId}
-            allowedCategoryIds={hasQuery && visibleCategoryIds.length > 0 ? visibleCategoryIds : undefined}
+            allowedCategoryIds={hasQuery ? visibleCategoryIds : undefined}
           />
         </div>
 
@@ -230,7 +231,19 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
               </div>
             )}
 
-            {showResults && (
+            {!loading &&
+              !error &&
+              (hasQuery || categoryId) &&
+              events.length === 0 && (
+                <EmptyState
+                  title="No events match your search"
+                  description="Try a different search or category."
+                  icon="search"
+                  action={{ label: 'Clear search', onClear: handleClear }}
+                />
+            )}
+
+            {showResults && events.length > 0 && (
               <section className="space-y-3">
                 <h2 className="text-xs font-semibold uppercase tracking-[0.21em] text-riot-text-secondary">
                   Results
