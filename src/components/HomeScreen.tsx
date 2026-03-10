@@ -173,7 +173,8 @@ function EventsFeed({
   const [visibleCategoryIds, setVisibleCategoryIds] = useState<number[]>([]);
 
   const fetchEvents = useCallback(async () => {
-    setLoading(true);
+    const showLoading = events.length === 0;
+    if (showLoading) setLoading(true);
     setError(null);
     try {
       const result = await getEvents({

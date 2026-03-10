@@ -66,7 +66,8 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
         return;
       }
 
-      setLoading(true);
+      const showLoading = events.length === 0;
+      if (showLoading) setLoading(true);
       setError(null);
       try {
         const result = await getEvents({
