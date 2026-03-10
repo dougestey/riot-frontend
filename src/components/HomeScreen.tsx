@@ -156,7 +156,7 @@ const tabbarColors = {
 
 // -- Events Feed --
 
-function EventsFeed() {
+function EventsFeed({ resetKey = 0 }: { resetKey?: number }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -205,6 +205,13 @@ function EventsFeed() {
       setVisibleCategoryIds(Array.from(ids));
     }
   }, [events, categoryId]);
+
+  // When resetKey changes (e.g. via navbar logo), clear the local
+  // search/category context so the feed returns to its default state.
+  useEffect(() => {
+    setSearch('');
+    setCategoryId(null);
+  }, [resetKey]);
 
   const monthGroups =
     !loading && !error
@@ -310,6 +317,7 @@ function PlaceholderTab({ label }: { label: string }) {
 
 export function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabId>('events');
+  const [eventsResetKey, setEventsResetKey] = useState(0);
 
   return (
     <Page>
@@ -319,7 +327,10 @@ export function HomeScreen() {
         title={
           <button
             type="button"
-            onClick={() => setActiveTab('events')}
+            onClick={() => {
+              setActiveTab('events');
+              setEventsResetKey((key) => key + 1);
+            }}
             className="flex items-center gap-2"
           >
             <Image
@@ -358,7 +369,7 @@ export function HomeScreen() {
         }
       />
 
-      {activeTab === 'events' && <EventsFeed />}
+      {activeTab === 'events' && <EventsFeed resetKey={eventsResetKey} />}
       {activeTab === 'search' && <SearchScreen />}
       {activeTab === 'saved' && <SavedScreen />}
       {activeTab === 'profile' && <ProfileScreen />}
