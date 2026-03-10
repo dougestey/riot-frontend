@@ -7,11 +7,17 @@ import type { Category } from '@/lib/types';
 interface CategoryFilterProps {
   activeCategoryId: number | null;
   onSelect: (categoryId: number | null) => void;
+  /**
+   * Optional list of category IDs to display. When provided,
+   * only categories whose id is in this list will be shown.
+   */
+  allowedCategoryIds?: number[];
 }
 
 export function CategoryFilter({
   activeCategoryId,
   onSelect,
+  allowedCategoryIds,
 }: CategoryFilterProps) {
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -19,7 +25,12 @@ export function CategoryFilter({
     getCategories().then(setCategories).catch(console.error);
   }, []);
 
-  if (categories.length === 0) return null;
+  const visibleCategories =
+    allowedCategoryIds && allowedCategoryIds.length > 0
+      ? categories.filter((cat) => allowedCategoryIds.includes(cat.id))
+      : categories;
+
+  if (visibleCategories.length === 0) return null;
 
   return (
     <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none">
@@ -33,7 +44,7 @@ export function CategoryFilter({
       >
         All
       </button>
-      {categories.map((cat) => (
+      {visibleCategories.map((cat) => (
         <button
           key={cat.id}
           onClick={() => onSelect(cat.id)}

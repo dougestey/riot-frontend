@@ -79,6 +79,8 @@ function formatAddress(venue: Venue): string {
 const navbarColors = {
   bgIos: 'bg-riot-black',
   textIos: 'text-white',
+  bgMaterial: 'bg-riot-black',
+  textMaterial: 'text-white',
 };
 
 interface EventDetailProps {
@@ -123,123 +125,78 @@ export function EventDetail({ event }: EventDetailProps) {
             >
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Events
+            <span className="[font-family:Futura,_system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro_Text',sans-serif]">
+              Events
+            </span>
           </Link>
         }
       />
 
-      {/* Hero image */}
-      <div className="relative aspect-[16/10] w-full bg-gradient-to-br from-riot-black to-riot-black/70">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={media?.alt ?? event.title}
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
+      <div className="px-4 pt-6 pb-28 lg:pt-8">
+        {/* Hero image */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-riot-black to-riot-black/70 lg:mx-auto lg:max-w-5xl lg:aspect-[16/9]">
+          {imageUrl ? (
             <Image
-              src="/riot_logo.png"
-              alt=""
-              width={64}
-              height={64}
-              className="opacity-20"
+              src={imageUrl}
+              alt={media?.alt ?? event.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 960px"
+              priority
             />
-          </div>
-        )}
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Image
+                src="/riot_logo.png"
+                alt=""
+                width={64}
+                height={64}
+                className="opacity-20"
+              />
+            </div>
+          )}
 
-        {/* Favorite button */}
-        <button
-          onClick={() => setSaved(!saved)}
-          className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm"
-          aria-label={saved ? 'Remove from saved' : 'Save event'}
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill={saved ? '#E91E63' : 'none'}
-            stroke={saved ? '#E91E63' : '#ffffff'}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          {/* Favorite button */}
+          <button
+            onClick={() => setSaved(!saved)}
+            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm lg:top-6"
+            aria-label={saved ? 'Remove from saved' : 'Save event'}
           >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="px-4 pt-5 pb-28">
-        {/* Status badge */}
-        {(isCancelled || isPostponed) && (
-          <div className="mb-3">
-            <span
-              className={`inline-block rounded px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white ${
-                isCancelled ? 'bg-red-600' : 'bg-amber-600'
-              }`}
-            >
-              {isCancelled ? 'Cancelled' : 'Postponed'}
-            </span>
-          </div>
-        )}
-
-        {/* Title */}
-        <h1 className="font-display text-2xl font-bold leading-tight text-riot-text">
-          {event.title}
-        </h1>
-
-        {/* Date & Time */}
-        <div className="mt-4 flex gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
             <svg
-              width="20"
-              height="20"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
-              fill="none"
-              stroke="#E91E63"
+              fill={saved ? '#E91E63' : 'none'}
+              stroke={saved ? '#E91E63' : '#ffffff'}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <rect
-                x="3"
-                y="4"
-                width="18"
-                height="18"
-                rx="2"
-                ry="2"
-              />
-              <line
-                x1="16"
-                y1="2"
-                x2="16"
-                y2="6"
-              />
-              <line
-                x1="8"
-                y1="2"
-                x2="8"
-                y2="6"
-              />
-              <line
-                x1="3"
-                y1="10"
-                x2="21"
-                y2="10"
-              />
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-riot-text">{date}</p>
-            <p className="text-sm text-riot-text-secondary">{time}</p>
-          </div>
+          </button>
         </div>
 
-        {/* Venue */}
-        {venue && (
+        <div className="mx-auto mt-5 max-w-5xl">
+          {/* Status badge */}
+          {(isCancelled || isPostponed) && (
+            <div className="mb-3">
+              <span
+                className={`inline-block rounded px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white ${
+                  isCancelled ? 'bg-red-600' : 'bg-amber-600'
+                }`}
+              >
+                {isCancelled ? 'Cancelled' : 'Postponed'}
+              </span>
+            </div>
+          )}
+
+          {/* Title */}
+          <h1 className="font-display text-2xl font-bold leading-tight text-riot-text">
+            {event.title}
+          </h1>
+
+          {/* Date & Time */}
           <div className="mt-4 flex gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
               <svg
@@ -252,131 +209,180 @@ export function EventDetail({ event }: EventDetailProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle
-                  cx="12"
-                  cy="10"
-                  r="3"
+                <rect
+                  x="3"
+                  y="4"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  ry="2"
+                />
+                <line
+                  x1="16"
+                  y1="2"
+                  x2="16"
+                  y2="6"
+                />
+                <line
+                  x1="8"
+                  y1="2"
+                  x2="8"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  y1="10"
+                  x2="21"
+                  y2="10"
                 />
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-riot-text">
-                {venue.name}
-              </p>
-              {venue.address && (
-                <p className="text-sm text-riot-text-secondary">
-                  {formatAddress(venue)}
-                </p>
-              )}
+              <p className="text-sm font-semibold text-riot-text">{date}</p>
+              <p className="text-sm text-riot-text-secondary">{time}</p>
             </div>
           </div>
-        )}
 
-        {/* Virtual event */}
-        {event.isVirtual && event.virtualUrl && (
-          <div className="mt-4 flex gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#E91E63"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
+          {/* Venue */}
+          {venue && (
+            <div className="mt-4 flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E91E63"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle
+                    cx="12"
+                    cy="10"
+                    r="3"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-riot-text">
+                  {venue.name}
+                </p>
+                {venue.address && (
+                  <p className="text-sm text-riot-text-secondary">
+                    {formatAddress(venue)}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="flex items-center">
+          )}
+
+          {/* Virtual event */}
+          {event.isVirtual && event.virtualUrl && (
+            <div className="mt-4 flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E91E63"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              </div>
+              <div className="flex items-center">
+                <a
+                  href={event.virtualUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-riot-pink"
+                >
+                  Join Virtual Event
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Organizers */}
+          {organizers.length > 0 && (
+            <div className="mt-4 flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E91E63"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-riot-text">
+                  {organizers.map((o) => o.name).join(', ')}
+                </p>
+                <p className="text-sm text-riot-text-secondary">Organizer</p>
+              </div>
+            </div>
+          )}
+
+          {/* Categories */}
+          {categories.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-1.5">
+              {categories.map((cat) => (
+                <span
+                  key={cat.id}
+                  className="rounded bg-riot-pink px-3 py-1 text-xs font-medium uppercase tracking-wide text-white"
+                >
+                  {cat.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Description */}
+          {event.description && (
+            <div className="mt-6">
+              <h2 className="font-display mb-2 text-lg font-semibold text-riot-text">
+                About
+              </h2>
+              <LexicalRenderer
+                content={event.description}
+                className="text-sm leading-relaxed text-riot-text-secondary"
+              />
+            </div>
+          )}
+
+          {/* Actions */}
+          {event.website && (
+            <div className="mt-6">
               <a
-                href={event.virtualUrl}
+                href={event.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-semibold text-riot-pink"
+                className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
               >
-                Join Virtual Event
+                Visit Website
               </a>
             </div>
-          </div>
-        )}
-
-        {/* Organizers */}
-        {organizers.length > 0 && (
-          <div className="mt-4 flex gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-riot-pink/10">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#E91E63"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle
-                  cx="9"
-                  cy="7"
-                  r="4"
-                />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-riot-text">
-                {organizers.map((o) => o.name).join(', ')}
-              </p>
-              <p className="text-sm text-riot-text-secondary">Organizer</p>
-            </div>
-          </div>
-        )}
-
-        {/* Categories */}
-        {categories.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-1.5">
-            {categories.map((cat) => (
-              <span
-                key={cat.id}
-                className="rounded bg-riot-pink px-3 py-1 text-xs font-medium uppercase tracking-wide text-white"
-              >
-                {cat.name}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Description */}
-        {event.description && (
-          <div className="mt-6">
-            <h2 className="font-display mb-2 text-lg font-semibold text-riot-text">
-              About
-            </h2>
-            <LexicalRenderer
-              content={event.description}
-              className="text-sm leading-relaxed text-riot-text-secondary"
-            />
-          </div>
-        )}
-
-        {/* Actions */}
-        {event.website && (
-          <div className="mt-6">
-            <a
-              href={event.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
-            >
-              Visit Website
-            </a>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Page>
   );
