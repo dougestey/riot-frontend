@@ -6,15 +6,21 @@ interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   initialValue?: string;
+  autoFocusKey?: number;
+  /** When provided, called on focus (e.g. to navigate to Search tab). */
+  onFocus?: () => void;
 }
 
 export function SearchBar({
   onSearch,
   placeholder = 'Search events...',
   initialValue = '',
+  autoFocusKey,
+  onFocus,
 }: SearchBarProps) {
   const [value, setValue] = useState(initialValue);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setValue(initialValue);
@@ -35,6 +41,15 @@ export function SearchBar({
       }
     };
   }, [value, onSearch]);
+
+  useEffect(() => {
+    if (autoFocusKey !== undefined && typeof window !== 'undefined') {
+      // Small timeout to ensure element is mounted and visible
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  }, [autoFocusKey]);
 
   return (
     <div className="relative">
@@ -58,7 +73,9 @@ export function SearchBar({
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        onFocus={onFocus}
         placeholder={placeholder}
+        ref={inputRef}
         className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-9 pl-10 text-sm text-riot-text placeholder:text-riot-text-secondary/60 focus:border-riot-pink focus:ring-1 focus:ring-riot-pink focus:outline-none"
       />
 

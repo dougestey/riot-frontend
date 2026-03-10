@@ -156,7 +156,13 @@ const tabbarColors = {
 
 // -- Events Feed --
 
-function EventsFeed({ resetKey = 0 }: { resetKey?: number }) {
+function EventsFeed({
+  resetKey = 0,
+  onOpenSearch,
+}: {
+  resetKey?: number;
+  onOpenSearch?: () => void;
+}) {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -240,14 +246,12 @@ function EventsFeed({ resetKey = 0 }: { resetKey?: number }) {
 
   return (
     <div className="px-4 pt-6 pb-24 lg:pb-14">
-      <div className="mx-auto max-w-5xl space-y-4">
-        <SearchBar onSearch={handleSearch} />
+      <div className="mx-auto max-w-4xl space-y-4">
+        <SearchBar onSearch={handleSearch} onFocus={onOpenSearch} />
         <CategoryFilter
           activeCategoryId={categoryId}
           onSelect={setCategoryId}
-          allowedCategoryIds={
-            events.length > 0 ? visibleCategoryIds : undefined
-          }
+          allowedCategoryIds={events.length > 0 && visibleCategoryIds.length > 0 ? visibleCategoryIds : undefined}
         />
 
         {loading && (
@@ -318,6 +322,7 @@ function PlaceholderTab({ label }: { label: string }) {
 export function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabId>('events');
   const [eventsResetKey, setEventsResetKey] = useState(0);
+  const [searchFocusKey, setSearchFocusKey] = useState(0);
 
   return (
     <Page>
@@ -353,7 +358,12 @@ export function HomeScreen() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    if (tab.id === 'search') {
+                      setSearchFocusKey((key) => key + 1);
+                    }
+                  }}
                   className={`flex items-center gap-1 !bg-transparent text-xs font-medium uppercase tracking-wide transition-colors ${
                     isActive
                       ? 'text-riot-pink'
@@ -369,8 +379,16 @@ export function HomeScreen() {
         }
       />
 
-      {activeTab === 'events' && <EventsFeed resetKey={eventsResetKey} />}
-      {activeTab === 'search' && <SearchScreen />}
+      {activeTab === 'events' && (
+        <EventsFeed
+          resetKey={eventsResetKey}
+          onOpenSearch={() => {
+            setActiveTab('search');
+            setSearchFocusKey((k) => k + 1);
+          }}
+        />
+      )}
+      {activeTab === 'search' && <SearchScreen focusKey={searchFocusKey} />}
       {activeTab === 'saved' && <SavedScreen />}
       {activeTab === 'profile' && <ProfileScreen />}
 

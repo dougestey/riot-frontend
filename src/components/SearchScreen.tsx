@@ -35,7 +35,7 @@ function saveRecentSearches(searches: string[]) {
   }
 }
 
-export function SearchScreen() {
+export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
   const [query, setQuery] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
@@ -138,8 +138,8 @@ export function SearchScreen() {
 
   return (
     <div className="px-4 pt-6 pb-24 lg:pb-14">
-      <div className="mx-auto max-w-3xl space-y-6">
-        <div className="space-y-3">
+      <div className="mx-auto max-w-4xl space-y-6">
+        <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <SearchBar
@@ -147,6 +147,7 @@ export function SearchScreen() {
                 onSearch={handleSearch}
                 placeholder={placeholderText}
                 initialValue={query}
+                autoFocusKey={focusKey}
               />
             </div>
             {(hasQuery || categoryId || events.length > 0) && (
@@ -162,11 +163,7 @@ export function SearchScreen() {
           <CategoryFilter
             activeCategoryId={categoryId}
             onSelect={setCategoryId}
-            allowedCategoryIds={
-              hasQuery || categoryId || events.length > 0
-                ? visibleCategoryIds
-                : undefined
-            }
+            allowedCategoryIds={hasQuery && visibleCategoryIds.length > 0 ? visibleCategoryIds : undefined}
           />
         </div>
 
@@ -191,8 +188,8 @@ export function SearchScreen() {
         )}
 
         {loading && (
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+            {Array.from({ length: 4 }).map((_, i) => (
               <EventCardSkeleton key={i} />
             ))}
           </div>
@@ -209,7 +206,7 @@ export function SearchScreen() {
             <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-riot-text-secondary">
               Results
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
