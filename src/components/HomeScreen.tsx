@@ -435,7 +435,7 @@ export function HomeScreen() {
         }
       />
 
-      <div className="overflow-hidden">
+      <div className="main-content-below-navbar overflow-hidden">
         <div
           key={activeTab}
           className={`tab-pane-transition ${tabEntered ? 'translate-x-0 opacity-100' : slideFromRight ? 'translate-x-3 opacity-0' : '-translate-x-3 opacity-0'}`}

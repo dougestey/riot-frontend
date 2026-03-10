@@ -71,8 +71,12 @@ body {
   }
 }
 
-/* Navbar: exclude from view-transition so it never fades/flashes on route change */
+/* Navbar: fixed at viewport top so iOS overscroll bounce only moves content, not the bar */
 .riot-navbar {
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  top: 0;
   view-transition-name: riot-navbar;
   --color-ios-hover-highlight: transparent;
   --color-ios-light-glass: transparent;
@@ -80,6 +84,10 @@ body {
   --shadow-ios-light-glass: none;
   --shadow-ios-dark-glass: none;
   -webkit-tap-highlight-color: transparent;
+}
+/* Content below fixed navbar: reserve space so it doesn’t sit under the bar */
+.main-content-below-navbar {
+  padding-top: max(60px, calc(44px + env(safe-area-inset-top, 16px)));
 }
 @supports (view-transition-name: none) {
   ::view-transition-old(riot-navbar),
