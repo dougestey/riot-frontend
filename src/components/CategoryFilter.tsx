@@ -30,7 +30,8 @@ export function CategoryFilter({
       ? categories.filter((cat) => allowedCategoryIds.includes(cat.id))
       : categories;
 
-  if (visibleCategories.length === 0) return null;
+  // When no categories from API, hide filter. When restricted to empty list, still show "All".
+  if (allowedCategoryIds === undefined && categories.length === 0) return null;
 
   return (
     <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none">

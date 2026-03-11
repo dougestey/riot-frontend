@@ -280,7 +280,7 @@ function EventsFeed({
         <CategoryFilter
           activeCategoryId={categoryId}
           onSelect={setCategoryId}
-          allowedCategoryIds={search.trim() ? visibleCategoryIds : undefined}
+          allowedCategoryIds={visibleCategoryIds}
         />
 
         <div className="overflow-hidden">
@@ -396,6 +396,13 @@ export function HomeScreen() {
     });
     return () => cancelAnimationFrame(id);
   }, [tabEntered, activeTab]);
+
+  // Scroll to top when switching tabs
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
+  }, [activeTab]);
 
   return (
     <Page>
