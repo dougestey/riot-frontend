@@ -22,12 +22,18 @@ const baseURL = `${BACKEND_URL.replace(/\/$/, '')}/api`;
 function createFetchWithRevalidate(): typeof fetch {
   const defaultFetch = globalThis.fetch;
   return (input: RequestInfo | URL, init?: RequestInit) => {
-    // Next.js extends fetch with next: { revalidate } for ISR (server only)
-    const nextInit =
-      typeof window === 'undefined' && init
-        ? { ...init, next: { revalidate: 60 } }
-        : init;
-    return defaultFetch(input, nextInit as RequestInit);
+    // On the server, always ask Next.js to bypass the data cache so
+    // event and other dynamic data reflects the latest backend state.
+    if (typeof window === 'undefined') {
+      const serverInit: RequestInit = {
+        cache: 'no-store',
+        ...(init ?? {}),
+        next: { ...(init as any)?.next, revalidate: 0 },
+      };
+      return defaultFetch(input, serverInit);
+    }
+
+    return defaultFetch(input, init as RequestInit);
   };
 }
 

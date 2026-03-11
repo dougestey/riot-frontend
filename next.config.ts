@@ -7,6 +7,14 @@ const withPWA = withPWAInit({
   register: true,
   workboxOptions: {
     skipWaiting: true,
+    runtimeCaching: [
+      // Never cache API responses; always hit the network for dynamic data.
+      {
+        urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+        handler: 'NetworkOnly',
+        method: 'GET',
+      },
+    ],
   },
 });
 
