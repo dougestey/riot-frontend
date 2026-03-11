@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'RIOT',
-    short_name: 'RIOT',
+    name: 'Riot',
+    short_name: 'Riot',
     description: 'Discover events near you',
     start_url: '/',
     display: 'standalone',
