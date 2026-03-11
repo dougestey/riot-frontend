@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Category, Event } from '@/lib/types';
 import { getEvents } from '@/lib/api';
 import { SearchBar } from './SearchBar';
@@ -142,29 +142,6 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
   const showResults =
     !loading && !error && (events.length > 0 || hasQuery || !!categoryId);
 
-  // Direction-aware slide when category changes (same as EventsFeed)
-  const categoryIndex =
-    categoryId === null ? 0 : 1 + visibleCategoryIds.indexOf(categoryId);
-  const prevCategoryIndexRef = useRef(categoryIndex);
-  const [categorySlideFromRight, setCategorySlideFromRight] = useState(true);
-  const [categoryContentEntered, setCategoryContentEntered] = useState(true);
-
-  useEffect(() => {
-    if (prevCategoryIndexRef.current !== categoryIndex) {
-      setCategorySlideFromRight(categoryIndex > prevCategoryIndexRef.current);
-      prevCategoryIndexRef.current = categoryIndex;
-      setCategoryContentEntered(false);
-    }
-  }, [categoryIndex]);
-
-  useEffect(() => {
-    if (categoryContentEntered) return;
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setCategoryContentEntered(true));
-    });
-    return () => cancelAnimationFrame(id);
-  }, [categoryContentEntered]);
-
   return (
     <div className="px-4 pt-6 pb-24 lg:pb-14">
       <div className="mx-auto max-w-4xl space-y-6">
@@ -217,10 +194,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
         )}
 
         <div className="overflow-hidden">
-          <div
-            key={`search-feed-${categoryId ?? 'all'}`}
-            className={`category-content-transition ${categoryContentEntered ? 'translate-x-0 opacity-100' : categorySlideFromRight ? 'translate-x-4 opacity-0' : '-translate-x-4 opacity-0'}`}
-          >
+          <div key={`search-feed-${categoryId ?? 'all'}`}>
             {loading && (
               <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                 {Array.from({ length: 4 }).map((_, i) => (

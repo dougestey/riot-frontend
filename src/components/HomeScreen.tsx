@@ -223,31 +223,6 @@ function EventsFeed({
     setCategoryId(null);
   }, [resetKey]);
 
-  // Direction-aware slide when category changes (index = position in filter pills: All=0, then visibleCategoryIds order)
-  const categoryIndex =
-    categoryId === null
-      ? 0
-      : 1 + visibleCategoryIds.indexOf(categoryId);
-  const prevCategoryIndexRef = useRef(categoryIndex);
-  const [categorySlideFromRight, setCategorySlideFromRight] = useState(true);
-  const [categoryContentEntered, setCategoryContentEntered] = useState(true);
-
-  useEffect(() => {
-    if (prevCategoryIndexRef.current !== categoryIndex) {
-      setCategorySlideFromRight(categoryIndex > prevCategoryIndexRef.current);
-      prevCategoryIndexRef.current = categoryIndex;
-      setCategoryContentEntered(false);
-    }
-  }, [categoryIndex]);
-
-  useEffect(() => {
-    if (categoryContentEntered) return;
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setCategoryContentEntered(true));
-    });
-    return () => cancelAnimationFrame(id);
-  }, [categoryContentEntered]);
-
   const monthGroups =
     !loading && !error
       ? events.reduce<
@@ -284,10 +259,7 @@ function EventsFeed({
         />
 
         <div className="overflow-hidden">
-          <div
-            key={`feed-${categoryId ?? 'all'}`}
-            className={`category-content-transition ${categoryContentEntered ? 'translate-x-0 opacity-100' : categorySlideFromRight ? 'translate-x-4 opacity-0' : '-translate-x-4 opacity-0'}`}
-          >
+          <div key={`feed-${categoryId ?? 'all'}`}>
             {loading && (
               <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                 {Array.from({ length: 4 }).map((_, i) => (

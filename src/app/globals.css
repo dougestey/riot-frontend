@@ -62,16 +62,6 @@ body {
   }
 }
 
-/* Category filter content slide (EventsFeed / SearchScreen) */
-.category-content-transition {
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-}
-@media (prefers-reduced-motion: reduce) {
-  .category-content-transition {
-    transition-duration: 0.01ms;
-  }
-}
-
 /* Navbar: fixed at viewport top so iOS overscroll bounce only moves content, not the bar */
 .riot-navbar {
   position: fixed !important;
