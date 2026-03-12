@@ -62,6 +62,38 @@ export async function getEvents(
   };
 }
 
+export interface GetEventCategoriesForQueryParams {
+  search?: string;
+  categoryId?: number;
+  featured?: boolean;
+}
+
+export interface QueryCategorySummary {
+  id: number;
+  name: string;
+  eventCount: number;
+}
+
+export async function getEventCategoriesForQuery(
+  params: GetEventCategoriesForQueryParams = {}
+): Promise<QueryCategorySummary[]> {
+  const qs = new URLSearchParams();
+  if (params.search) qs.set('search', params.search);
+  if (params.categoryId != null) qs.set('categoryId', String(params.categoryId));
+  if (params.featured != null) qs.set('featured', String(params.featured));
+
+  const res = await fetch(`/api/event-categories?${qs.toString()}`, {
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to load event categories');
+  }
+
+  const data = (await res.json()) as { categories?: QueryCategorySummary[] };
+  return data.categories ?? [];
+}
+
 export async function getEvent(slug: string): Promise<Event | null> {
   const result = await payload.find({
     collection: 'events',

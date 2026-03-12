@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { Page, Navbar, Toolbar, TabbarLink, Icon, Block } from 'konsta/react';
-import { getEvents } from '@/lib/api';
+import { getEvents, getEventCategoriesForQuery } from '@/lib/api';
 import type { Event } from '@/lib/types';
 import { EventCard } from './EventCard';
 import { EventCardSkeleton } from './EventCardSkeleton';
@@ -172,6 +172,7 @@ function EventsFeed({
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [visibleCategoryIds, setVisibleCategoryIds] = useState<number[]>([]);
+  const [queryCategoryIds, setQueryCategoryIds] = useState<number[] | null>(null);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [nextPage, setNextPage] = useState<number | null>(null);
@@ -179,7 +180,8 @@ function EventsFeed({
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const requestIdRef = useRef(0);
+  const eventsRequestIdRef = useRef(0);
+  const categoriesRequestIdRef = useRef(0);
 
   const fetchEvents = useCallback(
     async ({
@@ -190,7 +192,7 @@ function EventsFeed({
       mode: 'reset' | 'append';
     }) => {
       const isReset = mode === 'reset';
-      const requestId = ++requestIdRef.current;
+      const requestId = ++eventsRequestIdRef.current;
 
       if (isReset) {
         setLoading(true);
@@ -209,7 +211,7 @@ function EventsFeed({
         const incoming = result.docs ?? [];
 
         // Ignore stale responses for older requests
-        if (requestIdRef.current !== requestId) return;
+        if (eventsRequestIdRef.current !== requestId) return;
 
         if (isReset) {
           setEvents(incoming);
@@ -232,7 +234,7 @@ function EventsFeed({
         setHasNextPage(hasMoreFromBackend);
         setNextPage(hasMoreFromBackend ? result.nextPage! : null);
       } catch (err) {
-        if (requestIdRef.current !== requestId) return;
+        if (eventsRequestIdRef.current !== requestId) return;
 
         const message = err instanceof Error ? err.message : 'Failed to load events';
         if (isReset) {
@@ -241,7 +243,7 @@ function EventsFeed({
           setLoadMoreError(message);
         }
       } finally {
-        if (requestIdRef.current !== requestId) return;
+        if (eventsRequestIdRef.current !== requestId) return;
 
         if (isReset) setLoading(false);
         else setIsLoadingMore(false);
@@ -251,12 +253,13 @@ function EventsFeed({
   );
 
   useEffect(() => {
-    // Whenever the search or category changes, restart pagination from page 1.
+    // Whenever the search or category changes, restart pagination from page 1
+    // and let the caller decide how to refresh categories.
     setEvents([]);
     setPage(1);
     setHasNextPage(true);
     setNextPage(null);
-    requestIdRef.current += 1; // invalidate in-flight requests
+    eventsRequestIdRef.current += 1; // invalidate in-flight requests
 
     fetchEvents({ pageToLoad: 1, mode: 'reset' });
   }, [fetchEvents]);
@@ -269,29 +272,49 @@ function EventsFeed({
     setCategoryId(id);
   }, []);
 
+  // Preload categories for the current query whenever search/category change.
   useEffect(() => {
-    // Only update the visible category set when no specific category
-    // is selected, so tabbing through categories doesn't shrink the list.
-    if (categoryId === null) {
-      const ids = new Set<number>();
-      events.forEach((event) => {
-        event.categories?.forEach((cat) => {
-          if (typeof cat === 'number') {
-            ids.add(cat);
-          } else if (cat && typeof cat === 'object') {
-            ids.add(cat.id);
-          }
-        });
+    const requestId = ++categoriesRequestIdRef.current;
+    setQueryCategoryIds(null);
+
+    getEventCategoriesForQuery({
+      search: search || undefined,
+      categoryId: categoryId ?? undefined,
+    })
+      .then((categories) => {
+        if (categoriesRequestIdRef.current !== requestId) return;
+        setQueryCategoryIds(categories.map((c) => c.id));
+      })
+      .catch(() => {
+        if (categoriesRequestIdRef.current !== requestId) return;
+        setQueryCategoryIds(null);
       });
-      setVisibleCategoryIds(Array.from(ids));
-    }
-  }, [events, categoryId]);
+  }, [search, categoryId]);
+
+  useEffect(() => {
+    // Derive category IDs from the currently loaded events as a fallback
+    // when we don't yet have query-level category data.
+    if (queryCategoryIds != null) return;
+
+    const ids = new Set<number>();
+    events.forEach((event) => {
+      event.categories?.forEach((cat) => {
+        if (typeof cat === 'number') {
+          ids.add(cat);
+        } else if (cat && typeof cat === 'object') {
+          ids.add(cat.id);
+        }
+      });
+    });
+    setVisibleCategoryIds(Array.from(ids));
+  }, [events, queryCategoryIds]);
 
   // When resetKey changes (e.g. via navbar logo), clear the local
   // search/category context so the feed returns to its default state.
   useEffect(() => {
     setSearch('');
     setCategoryId(null);
+    setQueryCategoryIds(null);
     // The fetch effect above is keyed on search/category and will
     // reset pagination and refetch page 1 automatically.
   }, [resetKey]);
@@ -366,7 +389,7 @@ function EventsFeed({
         <CategoryFilter
           activeCategoryId={categoryId}
           onSelect={handleCategorySelect}
-          allowedCategoryIds={visibleCategoryIds}
+          allowedCategoryIds={queryCategoryIds ?? visibleCategoryIds}
         />
 
         <div className="overflow-hidden">
