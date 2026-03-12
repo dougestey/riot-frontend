@@ -174,26 +174,30 @@ function EventsFeed({
   const [visibleCategoryIds, setVisibleCategoryIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const [nextPage, setNextPage] = useState<number | null>(2);
+  const [nextPage, setNextPage] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastRequestedPageRef = useRef<number | null>(null);
+  const requestIdRef = useRef(0);
 
   const fetchEvents = useCallback(
-    async (pageToLoad = 1, { append = false } = {}) => {
-      const isInitialLoad = !append;
-      const showLoading = isInitialLoad && events.length === 0;
+    async ({
+      pageToLoad,
+      mode,
+    }: {
+      pageToLoad: number;
+      mode: 'reset' | 'append';
+    }) => {
+      const isReset = mode === 'reset';
+      const requestId = ++requestIdRef.current;
 
-      if (showLoading) {
+      if (isReset) {
         setLoading(true);
-      }
-      if (isInitialLoad) {
         setError(null);
       } else {
-        setLoadMoreError(null);
         setIsLoadingMore(true);
+        setLoadMoreError(null);
       }
 
       try {
@@ -204,76 +208,65 @@ function EventsFeed({
         });
         const incoming = result.docs ?? [];
 
-        if (append) {
-          // Appending: only add truly new events; if the backend
-          // stops sending new docs, end pagination to avoid loops.
+        // Ignore stale responses for older requests
+        if (requestIdRef.current !== requestId) return;
+
+        if (isReset) {
+          setEvents(incoming);
+        } else {
+          // Append: only add truly new events to avoid duplicates.
           setEvents((prev) => {
-            if (incoming.length === 0) {
-              return prev;
-            }
+            if (incoming.length === 0) return prev;
 
             const existingIds = new Set(prev.map((e) => e.id));
             const newDocs = incoming.filter((e) => !existingIds.has(e.id));
-
-            if (newDocs.length === 0) {
-              return prev;
-            }
+            if (newDocs.length === 0) return prev;
 
             return [...prev, ...newDocs];
           });
-
-          const hasMoreFromBackend =
-            result.hasNextPage && result.nextPage != null;
-          setPage(result.page);
-          setHasNextPage(hasMoreFromBackend);
-          setNextPage(hasMoreFromBackend ? result.nextPage! : null);
-        } else {
-          // Initial / refreshed load replaces the list entirely.
-          setEvents(incoming);
-          const hasMoreFromBackend =
-            result.hasNextPage && result.nextPage != null;
-          setPage(result.page);
-          setHasNextPage(hasMoreFromBackend);
-          setNextPage(hasMoreFromBackend ? result.nextPage! : null);
         }
+
+        const hasMoreFromBackend =
+          result.hasNextPage && result.nextPage != null;
+        setPage(result.page);
+        setHasNextPage(hasMoreFromBackend);
+        setNextPage(hasMoreFromBackend ? result.nextPage! : null);
       } catch (err) {
+        if (requestIdRef.current !== requestId) return;
+
         const message = err instanceof Error ? err.message : 'Failed to load events';
-        if (isInitialLoad) {
+        if (isReset) {
           setError(message);
         } else {
           setLoadMoreError(message);
         }
       } finally {
-        if (isInitialLoad) {
-          setLoading(false);
-        } else {
-          setIsLoadingMore(false);
-        }
+        if (requestIdRef.current !== requestId) return;
+
+        if (isReset) setLoading(false);
+        else setIsLoadingMore(false);
       }
     },
-    [search, categoryId, events.length]
+    [search, categoryId]
   );
 
   useEffect(() => {
-    fetchEvents(1, { append: false });
+    // Whenever the search or category changes, restart pagination from page 1.
+    setEvents([]);
+    setPage(1);
+    setHasNextPage(true);
+    setNextPage(null);
+    requestIdRef.current += 1; // invalidate in-flight requests
+
+    fetchEvents({ pageToLoad: 1, mode: 'reset' });
   }, [fetchEvents]);
 
   const handleSearch = useCallback((query: string) => {
     setSearch(query);
-    setPage(1);
-    setHasNextPage(true);
-    setNextPage(2);
-    setEvents([]);
-    lastRequestedPageRef.current = null;
   }, []);
 
   const handleCategorySelect = useCallback((id: number | null) => {
     setCategoryId(id);
-    setPage(1);
-    setHasNextPage(true);
-    setNextPage(2);
-    setEvents([]);
-    lastRequestedPageRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -299,11 +292,8 @@ function EventsFeed({
   useEffect(() => {
     setSearch('');
     setCategoryId(null);
-    setEvents([]);
-    setPage(1);
-    setHasNextPage(true);
-    setNextPage(2);
-    lastRequestedPageRef.current = null;
+    // The fetch effect above is keyed on search/category and will
+    // reset pagination and refetch page 1 automatically.
   }, [resetKey]);
 
   useEffect(() => {
@@ -316,18 +306,22 @@ function EventsFeed({
       observerRef.current.disconnect();
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-      if (!entry?.isIntersecting) return;
-      if (loading || isLoadingMore || !hasNextPage || !nextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+        if (loading || isLoadingMore || !hasNextPage || !nextPage) return;
 
-      // Ensure we only request each page once, even if the
-      // observer effect re-runs while the sentinel remains visible.
-      if (lastRequestedPageRef.current === nextPage) return;
-      lastRequestedPageRef.current = nextPage;
-
-      fetchEvents(nextPage, { append: true });
-    });
+        fetchEvents({ pageToLoad: nextPage, mode: 'append' });
+      },
+      {
+        root: null,
+        // Start loading a bit before the sentinel fully enters view
+        // to avoid hitching at the exact bottom of the viewport.
+        rootMargin: '0px 0px 300px 0px',
+        threshold: 0,
+      }
+    );
 
     observerRef.current = observer;
     observer.observe(node);
@@ -463,7 +457,7 @@ function EventsFeed({
                         type="button"
                         onClick={() => {
                           if (hasNextPage && !isLoadingMore && nextPage) {
-                            fetchEvents(nextPage, { append: true });
+                            fetchEvents({ pageToLoad: nextPage, mode: 'append' });
                           }
                         }}
                         className="text-sm font-medium text-red-700 underline"
