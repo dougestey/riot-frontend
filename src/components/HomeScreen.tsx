@@ -172,30 +172,108 @@ function EventsFeed({
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [visibleCategoryIds, setVisibleCategoryIds] = useState<number[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [nextPage, setNextPage] = useState<number | null>(2);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastRequestedPageRef = useRef<number | null>(null);
 
-  const fetchEvents = useCallback(async () => {
-    const showLoading = events.length === 0;
-    if (showLoading) setLoading(true);
-    setError(null);
-    try {
-      const result = await getEvents({
-        search: search || undefined,
-        categoryId: categoryId ?? undefined,
-      });
-      setEvents(result.docs);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load events');
-    } finally {
-      setLoading(false);
-    }
-  }, [search, categoryId]);
+  const fetchEvents = useCallback(
+    async (pageToLoad = 1, { append = false } = {}) => {
+      const isInitialLoad = !append;
+      const showLoading = isInitialLoad && events.length === 0;
+
+      if (showLoading) {
+        setLoading(true);
+      }
+      if (isInitialLoad) {
+        setError(null);
+      } else {
+        setLoadMoreError(null);
+        setIsLoadingMore(true);
+      }
+
+      try {
+        const result = await getEvents({
+          search: search || undefined,
+          categoryId: categoryId ?? undefined,
+          page: pageToLoad,
+        });
+        const incoming = result.docs ?? [];
+
+        if (append) {
+          // Appending: only add truly new events; if the backend
+          // stops sending new docs, end pagination to avoid loops.
+          setEvents((prev) => {
+            if (incoming.length === 0) {
+              return prev;
+            }
+
+            const existingIds = new Set(prev.map((e) => e.id));
+            const newDocs = incoming.filter((e) => !existingIds.has(e.id));
+
+            if (newDocs.length === 0) {
+              return prev;
+            }
+
+            return [...prev, ...newDocs];
+          });
+
+          const hasMoreFromBackend =
+            result.hasNextPage && result.nextPage != null;
+          setPage(result.page);
+          setHasNextPage(hasMoreFromBackend);
+          setNextPage(hasMoreFromBackend ? result.nextPage! : null);
+        } else {
+          // Initial / refreshed load replaces the list entirely.
+          setEvents(incoming);
+          const hasMoreFromBackend =
+            result.hasNextPage && result.nextPage != null;
+          setPage(result.page);
+          setHasNextPage(hasMoreFromBackend);
+          setNextPage(hasMoreFromBackend ? result.nextPage! : null);
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to load events';
+        if (isInitialLoad) {
+          setError(message);
+        } else {
+          setLoadMoreError(message);
+        }
+      } finally {
+        if (isInitialLoad) {
+          setLoading(false);
+        } else {
+          setIsLoadingMore(false);
+        }
+      }
+    },
+    [search, categoryId, events.length]
+  );
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(1, { append: false });
   }, [fetchEvents]);
 
   const handleSearch = useCallback((query: string) => {
     setSearch(query);
+    setPage(1);
+    setHasNextPage(true);
+    setNextPage(2);
+    setEvents([]);
+    lastRequestedPageRef.current = null;
+  }, []);
+
+  const handleCategorySelect = useCallback((id: number | null) => {
+    setCategoryId(id);
+    setPage(1);
+    setHasNextPage(true);
+    setNextPage(2);
+    setEvents([]);
+    lastRequestedPageRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -221,7 +299,46 @@ function EventsFeed({
   useEffect(() => {
     setSearch('');
     setCategoryId(null);
+    setEvents([]);
+    setPage(1);
+    setHasNextPage(true);
+    setNextPage(2);
+    lastRequestedPageRef.current = null;
   }, [resetKey]);
+
+  useEffect(() => {
+    if (!hasNextPage) return;
+
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (!entry?.isIntersecting) return;
+      if (loading || isLoadingMore || !hasNextPage || !nextPage) return;
+
+      // Ensure we only request each page once, even if the
+      // observer effect re-runs while the sentinel remains visible.
+      if (lastRequestedPageRef.current === nextPage) return;
+      lastRequestedPageRef.current = nextPage;
+
+      fetchEvents(nextPage, { append: true });
+    });
+
+    observerRef.current = observer;
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+      if (observerRef.current === observer) {
+        observerRef.current = null;
+      }
+    };
+  }, [hasNextPage, loading, isLoadingMore, fetchEvents, nextPage]);
 
   const monthGroups =
     !loading && !error
@@ -254,7 +371,7 @@ function EventsFeed({
         <SearchBar onSearch={handleSearch} onFocus={onOpenSearch} />
         <CategoryFilter
           activeCategoryId={categoryId}
-          onSelect={setCategoryId}
+          onSelect={handleCategorySelect}
           allowedCategoryIds={visibleCategoryIds}
         />
 
@@ -323,6 +440,44 @@ function EventsFeed({
                     </div>
                   </section>
                 ))}
+                {hasNextPage && (
+                  <div
+                    ref={loadMoreRef}
+                    className="h-8 w-full"
+                  />
+                )}
+                {isLoadingMore && (
+                  <p className="mt-4 text-center text-xs text-riot-text-secondary">
+                    Loading more events...
+                  </p>
+                )}
+                {loadMoreError && (
+                  <Block
+                    strong
+                    inset
+                    className="mt-4 !bg-red-50"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm text-red-600">{loadMoreError}</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (hasNextPage && !isLoadingMore && nextPage) {
+                            fetchEvents(nextPage, { append: true });
+                          }
+                        }}
+                        className="text-sm font-medium text-red-700 underline"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  </Block>
+                )}
+                {!hasNextPage && events.length > 0 && (
+                  <p className="mt-4 text-center text-xs text-riot-text-secondary">
+                    You&apos;ve reached the end of the list.
+                  </p>
+                )}
               </div>
             )}
           </div>
