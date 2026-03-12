@@ -272,14 +272,15 @@ function EventsFeed({
     setCategoryId(id);
   }, []);
 
-  // Preload categories for the current query whenever search/category change.
+  // Preload categories for the current query whenever the search term changes.
+  // Category filters should not affect which category pills are visible; they
+  // only affect the events list.
   useEffect(() => {
     const requestId = ++categoriesRequestIdRef.current;
     setQueryCategoryIds(null);
 
     getEventCategoriesForQuery({
       search: search || undefined,
-      categoryId: categoryId ?? undefined,
     })
       .then((categories) => {
         if (categoriesRequestIdRef.current !== requestId) return;
@@ -289,7 +290,7 @@ function EventsFeed({
         if (categoriesRequestIdRef.current !== requestId) return;
         setQueryCategoryIds(null);
       });
-  }, [search, categoryId]);
+  }, [search]);
 
   useEffect(() => {
     // Derive category IDs from the currently loaded events as a fallback
