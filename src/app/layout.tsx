@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Image from 'next/image';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Oswald } from 'next/font/google';
+import pkg from '../../package.json';
 import { Providers } from './providers';
 import { ViewTransitionsWrapper } from '@/components/ViewTransitionsWrapper';
 import { PwaSplashRemover } from '@/components/PwaSplashRemover';
@@ -70,6 +71,9 @@ export default function RootLayout({
             />
             <span className="font-brand text-xl font-bold uppercase tracking-wider text-white">
               RIOT
+            </span>
+            <span className="text-xs font-medium text-white/60">
+              {pkg.version}
             </span>
           </div>
         </div>
