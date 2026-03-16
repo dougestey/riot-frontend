@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getEvent } from '@/lib/api';
 import { EventDetail } from '@/components/EventDetail';
-import type { Media } from '@/lib/types';
+import { getMediaUrl } from '@/lib/media';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -18,10 +18,7 @@ export async function generateMetadata({
     return { title: 'Event Not Found | RIOT' };
   }
 
-  const image =
-    event.featuredImage && typeof event.featuredImage !== 'number'
-      ? (event.featuredImage as Media).sizes?.feature?.url ?? (event.featuredImage as Media).url
-      : undefined;
+  const image = getMediaUrl(event.featuredImage, 'feature');
 
   return {
     title: `${event.title} | RIOT`,

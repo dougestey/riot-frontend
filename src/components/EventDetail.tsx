@@ -12,7 +12,8 @@ import {
   ToolbarPane,
 } from 'konsta/react';
 import { LexicalRenderer } from '@/lib/lexical';
-import type { Event, Media, Venue, Category, Organizer } from '@/lib/types';
+import type { Event, Venue, Category, Organizer } from '@/lib/types';
+import { getMediaUrl, getMediaAlt } from '@/lib/media';
 
 // -- Desktop nav icons (mirrors HomeScreen) --
 
@@ -192,11 +193,6 @@ const tabs = [
   { id: 'profile', label: 'Profile' },
 ] as const;
 
-function getMedia(media: Event['featuredImage']): Media | null {
-  if (!media || typeof media === 'number') return null;
-  return media as Media;
-}
-
 function getVenue(venue: Event['venue']): Venue | null {
   if (!venue || typeof venue === 'number') return null;
   return venue as Venue;
@@ -274,8 +270,7 @@ interface EventDetailProps {
 
 export function EventDetail({ event }: EventDetailProps) {
   const [saved, setSaved] = useState(false);
-  const media = getMedia(event.featuredImage);
-  const imageUrl = media?.sizes?.feature?.url ?? media?.url ?? null;
+  const imageUrl = getMediaUrl(event.featuredImage, 'feature');
   const venue = getVenue(event.venue);
   const categories = getCategories(event.categories);
   const organizers = getOrganizers(event.organizers);
@@ -349,7 +344,7 @@ export function EventDetail({ event }: EventDetailProps) {
           {imageUrl ? (
             <Image
               src={imageUrl}
-              alt={media?.alt ?? event.title}
+              alt={getMediaAlt(event.featuredImage) || event.title}
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 960px"

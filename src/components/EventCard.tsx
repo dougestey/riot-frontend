@@ -3,20 +3,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
-import type { Event, Media, Venue, Category } from '@/lib/types';
+import type { Event, Venue, Category } from '@/lib/types';
 import { useAuth } from '@/lib/auth';
 import { useSavedEvents } from '@/lib/saved-events';
+import { getMediaUrl, getMediaAlt } from '@/lib/media';
 import { AuthSheet } from './AuthSheet';
-
-function getMediaUrl(media: Event['featuredImage']): string | null {
-  if (!media || typeof media === 'number') return null;
-  return (media as Media).sizes?.card?.url ?? (media as Media).url ?? null;
-}
-
-function getMediaAlt(media: Event['featuredImage']): string {
-  if (!media || typeof media === 'number') return '';
-  return (media as Media).alt ?? '';
-}
 
 function getVenue(venue: Event['venue']): Venue | null {
   if (!venue || typeof venue === 'number') return null;
