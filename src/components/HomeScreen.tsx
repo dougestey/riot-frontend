@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Page, Navbar, Tabbar, TabbarLink, Icon, ToolbarPane } from 'konsta/react';
+import {
+  Page,
+  Navbar,
+  Tabbar,
+  TabbarLink,
+  Icon,
+  ToolbarPane,
+} from 'konsta/react';
 import { SearchScreen } from './SearchScreen';
 import { SavedScreen } from './SavedScreen';
 import { ProfileScreen } from './ProfileScreen';
@@ -12,7 +19,13 @@ import { EventsScreen } from './EventsScreen';
 
 type TabIconTone = 'light' | 'dark';
 
-function CalendarIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function CalendarIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -24,7 +37,11 @@ function CalendarIcon({ active, tone = 'light' }: { active: boolean; tone?: TabI
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
       <rect
@@ -57,7 +74,13 @@ function CalendarIcon({ active, tone = 'light' }: { active: boolean; tone?: TabI
   );
 }
 
-function SearchTabIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function SearchTabIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -69,7 +92,11 @@ function SearchTabIcon({ active, tone = 'light' }: { active: boolean; tone?: Tab
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
       <circle
@@ -87,7 +114,13 @@ function SearchTabIcon({ active, tone = 'light' }: { active: boolean; tone?: Tab
   );
 }
 
-function HeartIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function HeartIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -99,7 +132,11 @@ function HeartIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIcon
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -107,7 +144,13 @@ function HeartIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIcon
   );
 }
 
-function UserIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function UserIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -119,7 +162,11 @@ function UserIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconT
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -268,7 +315,7 @@ export function HomeScreen() {
       <Tabbar
         labels
         icons
-        className="left-0 bottom-4 fixed lg:hidden"
+        className="left-0 bottom-0 fixed lg:hidden"
       >
         <ToolbarPane>
           {tabs.map((tab) => {
@@ -286,7 +333,10 @@ export function HomeScreen() {
                 label={tab.label}
                 icon={
                   <Icon>
-                    <TabIcon active={isActive} tone="dark" />
+                    <TabIcon
+                      active={isActive}
+                      tone="dark"
+                    />
                   </Icon>
                 }
               />

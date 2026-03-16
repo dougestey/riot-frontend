@@ -3,7 +3,14 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
-import { Page, Navbar, Tabbar, TabbarLink, Icon, ToolbarPane } from 'konsta/react';
+import {
+  Page,
+  Navbar,
+  Tabbar,
+  TabbarLink,
+  Icon,
+  ToolbarPane,
+} from 'konsta/react';
 import { LexicalRenderer } from '@/lib/lexical';
 import type { Event, Media, Venue, Category, Organizer } from '@/lib/types';
 
@@ -11,7 +18,13 @@ import type { Event, Media, Venue, Category, Organizer } from '@/lib/types';
 
 type TabIconTone = 'light' | 'dark';
 
-function CalendarIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function CalendarIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -23,18 +36,50 @@ function CalendarIcon({ active, tone = 'light' }: { active: boolean; tone?: TabI
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
+      <rect
+        x="3"
+        y="4"
+        width="18"
+        height="18"
+        rx="2"
+        ry="2"
+      />
+      <line
+        x1="16"
+        y1="2"
+        x2="16"
+        y2="6"
+      />
+      <line
+        x1="8"
+        y1="2"
+        x2="8"
+        y2="6"
+      />
+      <line
+        x1="3"
+        y1="10"
+        x2="21"
+        y2="10"
+      />
     </svg>
   );
 }
 
-function SearchTabIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function SearchTabIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -46,16 +91,35 @@ function SearchTabIcon({ active, tone = 'light' }: { active: boolean; tone?: Tab
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <circle
+        cx="11"
+        cy="11"
+        r="8"
+      />
+      <line
+        x1="21"
+        y1="21"
+        x2="16.65"
+        y2="16.65"
+      />
     </svg>
   );
 }
 
-function HeartIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function HeartIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -67,7 +131,11 @@ function HeartIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIcon
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -75,7 +143,13 @@ function HeartIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIcon
   );
 }
 
-function UserIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconTone }) {
+function UserIcon({
+  active,
+  tone = 'light',
+}: {
+  active: boolean;
+  tone?: TabIconTone;
+}) {
   return (
     <svg
       width="24"
@@ -87,11 +161,19 @@ function UserIcon({ active, tone = 'light' }: { active: boolean; tone?: TabIconT
       strokeLinecap="round"
       strokeLinejoin="round"
       className={
-        active ? 'text-riot-pink' : tone === 'dark' ? 'text-black/70' : 'text-white'
+        active
+          ? 'text-riot-pink'
+          : tone === 'dark'
+            ? 'text-black/70'
+            : 'text-white'
       }
     >
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
+      <circle
+        cx="12"
+        cy="7"
+        r="4"
+      />
     </svg>
   );
 }
@@ -255,7 +337,9 @@ export function EventDetail({ event }: EventDetailProps) {
 
       <div
         className={`px-4 lg:pt-8 ${event.website ? 'pb-40 lg:pb-32' : 'pb-32'}`}
-        style={{ paddingTop: 'max(88px, calc(64px + env(safe-area-inset-top, 24px)))' }}
+        style={{
+          paddingTop: 'max(88px, calc(64px + env(safe-area-inset-top, 24px)))',
+        }}
       >
         {/* Hero image (view-transition-name matches EventCard for shared-element morph) */}
         <div
@@ -513,7 +597,8 @@ export function EventDetail({ event }: EventDetailProps) {
               <div
                 className="fixed left-0 right-0 z-10 px-4 pt-6 pb-4 lg:hidden"
                 style={{
-                  bottom: 'max(6rem, calc(80px + env(safe-area-inset-bottom, 0px)))',
+                  bottom:
+                    'max(6rem, calc(80px + env(safe-area-inset-bottom, 0px)))',
                   background: 'linear-gradient(to top, white 50%, transparent)',
                 }}
               >
@@ -528,13 +613,13 @@ export function EventDetail({ event }: EventDetailProps) {
               </div>
             </>
           )}
-      </div>
+        </div>
       </div>
 
       <Tabbar
         labels
         icons
-        className="left-0 bottom-4 fixed lg:hidden"
+        className="left-0 bottom-0 fixed lg:hidden"
       >
         <ToolbarPane>
           {tabs.map((tab) => {
@@ -553,7 +638,10 @@ export function EventDetail({ event }: EventDetailProps) {
                 label={tab.label}
                 icon={
                   <Icon>
-                    <TabIcon active={isEvents} tone="dark" />
+                    <TabIcon
+                      active={isEvents}
+                      tone="dark"
+                    />
                   </Icon>
                 }
               />
