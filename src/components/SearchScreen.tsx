@@ -143,7 +143,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
     !loading && !error && (events.length > 0 || hasQuery || !!categoryId);
 
   return (
-    <div className="px-4 pt-6 pb-24 lg:pb-14">
+    <div className="px-4 pt-6 pb-32 lg:pb-16">
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">

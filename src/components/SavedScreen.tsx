@@ -2,7 +2,7 @@
 
 export function SavedScreen() {
   return (
-    <div className="flex min-h-[calc(100vh-112px)] flex-col items-center justify-center px-6 pb-24 pt-16 lg:min-h-[calc(100vh-96px)]">
+    <div className="flex min-h-[calc(100vh-112px)] flex-col items-center justify-center px-6 pb-32 pt-16 lg:min-h-[calc(100vh-96px)]">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-riot-pink/10">
         <svg
           width="32"
