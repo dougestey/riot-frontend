@@ -1,4 +1,4 @@
-import type { Event, Category, Venue } from './payload-types';
+import type { Event, Category, Venue, SavedEvent } from './payload-types';
 import { payload } from './sdk';
 
 export interface PaginatedResponse<T> {
@@ -123,4 +123,30 @@ export async function getVenue(id: number): Promise<Venue | null> {
     disableErrors: true,
   });
   return doc ?? null;
+}
+
+export async function getSavedEvents(userId: number): Promise<SavedEvent[]> {
+  const result = await payload.find({
+    collection: 'saved-events',
+    where: { user: { equals: userId } },
+    sort: '-savedAt',
+    limit: 100,
+    depth: 2,
+  });
+  return result.docs;
+}
+
+export async function saveEvent(eventId: number): Promise<SavedEvent> {
+  // user is auto-set by backend beforeChange hook, but SDK types require it
+  return payload.create({
+    collection: 'saved-events',
+    data: { event: eventId, user: 0 } as unknown as SavedEvent,
+  });
+}
+
+export async function unsaveEvent(savedEventId: number): Promise<void> {
+  await payload.delete({
+    collection: 'saved-events',
+    id: savedEventId,
+  });
 }

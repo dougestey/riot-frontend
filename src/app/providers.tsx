@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { App } from 'konsta/react';
+import { AuthProvider } from '@/lib/auth';
+import { SavedEventsProvider } from '@/lib/saved-events';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'ios' | 'material'>('ios');
@@ -25,7 +27,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <App theme={theme} dark iosHoverHighlight={false}>
-      {children}
+      <AuthProvider>
+        <SavedEventsProvider>{children}</SavedEventsProvider>
+      </AuthProvider>
     </App>
   );
 }
