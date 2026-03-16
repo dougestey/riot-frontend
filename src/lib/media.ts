@@ -1,20 +1,27 @@
 import type { Event, Media } from './types';
 
 /**
- * Payload returns media URLs as relative paths (e.g. /api/media/file/img.jpg).
- * Next.js Image optimization can't reliably resolve these through rewrites in
- * production, so we prepend the backend origin to create absolute URLs that
- * the /_next/image handler can fetch directly.
+ * Payload returns media URLs that may be absolute (with PAYLOAD_PUBLIC_SERVER_URL
+ * baked in) or relative. We strip any backend origin and return a relative path
+ * like `/api/media/file/img.jpg`. Next.js Image treats relative URLs as local,
+ * fetching through the app itself — which hits the `/api/*` rewrite and proxies
+ * to the backend over the Docker network. This avoids the hairpin problem where
+ * the server-side image optimizer can't reach the external hostname.
  */
-const BACKEND_URL = (
+const PUBLIC_BACKEND = (
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 ).replace(/\/$/, '');
 
-function toAbsoluteUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  // Already absolute — leave it alone
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  return `${BACKEND_URL}${path}`;
+function toRelativePath(url: string | null | undefined): string | null {
+  if (!url) return null;
+  // Already relative — use as-is
+  if (url.startsWith('/')) return url;
+  // Absolute URL with the backend origin — strip it to a relative path
+  if (url.startsWith(PUBLIC_BACKEND)) {
+    return url.slice(PUBLIC_BACKEND.length);
+  }
+  // Some other absolute URL — leave it alone
+  return url;
 }
 
 export function getMediaUrl(
@@ -24,7 +31,7 @@ export function getMediaUrl(
   if (!media || typeof media === 'number') return null;
   const m = media as Media;
   const sizeUrl = m.sizes?.[size]?.url;
-  return toAbsoluteUrl(sizeUrl) ?? toAbsoluteUrl(m.url);
+  return toRelativePath(sizeUrl) ?? toRelativePath(m.url);
 }
 
 export function getMediaAlt(media: Event['featuredImage']): string {

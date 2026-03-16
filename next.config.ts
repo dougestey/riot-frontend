@@ -18,7 +18,13 @@ const withPWA = withPWAInit({
   },
 });
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// The rewrite destination must be reachable from the Next.js server container.
+// In Docker/Coolify, INTERNAL_API_URL (e.g. http://riot-backend:3000) goes over
+// the Docker network. Falls back to the public URL for local dev.
+const REWRITE_BACKEND =
+  process.env.INTERNAL_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:3000';
 
 const nextConfig: NextConfig = {
   turbopack: {},
@@ -26,7 +32,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${BACKEND_URL}/api/:path*`,
+        destination: `${REWRITE_BACKEND}/api/:path*`,
       },
     ];
   },
