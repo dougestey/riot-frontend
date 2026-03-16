@@ -19,7 +19,11 @@ export function ProfileScreen() {
           strokeLinejoin="round"
         >
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
+          <circle
+            cx="12"
+            cy="7"
+            r="4"
+          />
         </svg>
       </div>
 
@@ -34,15 +38,10 @@ export function ProfileScreen() {
 
       <button
         type="button"
-        className="mt-6 rounded-full bg-riot-pink px-6 py-2.5 text-sm font-semibold text-white shadow-sm active:opacity-85"
+        className="mt-6 rounded-full bg-riot-pink px-6 py-2.5 text-sm font-semibold text-white shadow-sm cursor-pointer active:opacity-85"
       >
         Sign In
       </button>
-
-      <div className="mt-10 text-xs text-riot-text-secondary">
-        <p>RIOT Events · v{version}</p>
-      </div>
     </div>
   );
 }
-

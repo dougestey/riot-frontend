@@ -27,7 +27,7 @@ export function SavedScreen() {
 
       <button
         type="button"
-        className="mt-6 rounded-full bg-riot-pink px-6 py-2.5 text-sm font-semibold text-white shadow-sm active:opacity-85"
+        className="mt-6 rounded-full bg-riot-pink px-6 py-2.5 text-sm font-semibold text-white shadow-sm cursor-pointer active:opacity-85"
       >
         Sign In
       </button>

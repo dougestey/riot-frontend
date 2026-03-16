@@ -249,7 +249,7 @@ export function HomeScreen() {
               setActiveTab('events');
               setEventsResetKey((key) => key + 1);
             }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 cursor-pointer"
           >
             <Image
               src="/riot_logo.png"
@@ -277,7 +277,7 @@ export function HomeScreen() {
                       setSearchFocusKey((key) => key + 1);
                     }
                   }}
-                  className={`flex items-center gap-1 !bg-transparent text-xs font-medium uppercase tracking-wide transition-colors ${
+                  className={`flex items-center gap-1 !bg-transparent text-xs font-medium uppercase tracking-wide transition-colors cursor-pointer ${
                     isActive
                       ? 'text-riot-pink'
                       : 'text-white/70 hover:text-white'

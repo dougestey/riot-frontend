@@ -160,7 +160,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-xs font-semibold text-riot-text-secondary underline-offset-2 hover:underline"
+                className="text-xs font-semibold text-riot-text-secondary underline-offset-2 hover:underline cursor-pointer"
               >
                 Clear
               </button>
@@ -183,7 +183,7 @@ export function SearchScreen({ focusKey = 0 }: { focusKey?: number }) {
                 <button
                   key={term}
                   type="button"
-                  className="rounded border border-riot-pink/40 px-3 py-1 text-xs font-semibold text-riot-pink"
+                  className="rounded border border-riot-pink/40 px-3 py-1 text-xs font-semibold text-riot-pink cursor-pointer"
                   onClick={() => setQuery(term)}
                 >
                   {term}

@@ -37,7 +37,7 @@ export function CategoryFilter({
     <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none">
       <button
         onClick={() => onSelect(null)}
-        className={`shrink-0 rounded px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors ${
+        className={`shrink-0 rounded px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors cursor-pointer ${
           activeCategoryId === null
             ? 'bg-riot-pink text-white'
             : 'bg-gray-100 text-riot-text-secondary'
@@ -49,7 +49,7 @@ export function CategoryFilter({
         <button
           key={cat.id}
           onClick={() => onSelect(cat.id)}
-          className={`shrink-0 rounded px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors ${
+          className={`shrink-0 rounded px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors cursor-pointer ${
             activeCategoryId === cat.id
               ? 'bg-riot-pink text-white'
               : 'bg-gray-100 text-riot-text-secondary'

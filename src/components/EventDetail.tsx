@@ -297,7 +297,7 @@ export function EventDetail({ event }: EventDetailProps) {
         title={
           <Link
             href="/"
-            className="flex items-center gap-1 text-sm font-medium text-white"
+            className="flex items-center gap-1 text-sm font-medium text-white cursor-pointer"
           >
             <svg
               width="20"
@@ -324,7 +324,7 @@ export function EventDetail({ event }: EventDetailProps) {
                 <Link
                   key={tab.id}
                   href="/"
-                  className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-white/70 transition-colors hover:text-white"
+                  className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-white/70 transition-colors hover:text-white cursor-pointer"
                 >
                   <TabIcon active={false} />
                   <span>{tab.label}</span>
@@ -370,7 +370,7 @@ export function EventDetail({ event }: EventDetailProps) {
           {/* Favorite button */}
           <button
             onClick={() => setSaved(!saved)}
-            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm lg:top-6"
+            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm cursor-pointer lg:top-6"
             aria-label={saved ? 'Remove from saved' : 'Save event'}
           >
             <svg
@@ -512,7 +512,7 @@ export function EventDetail({ event }: EventDetailProps) {
                   href={event.virtualUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-semibold text-riot-pink"
+                  className="text-sm font-semibold text-riot-pink cursor-pointer"
                 >
                   Join Virtual Event
                 </a>
@@ -588,7 +588,7 @@ export function EventDetail({ event }: EventDetailProps) {
                   href={event.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
+                  className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white cursor-pointer active:opacity-80"
                 >
                   Visit Website
                 </a>
@@ -606,7 +606,7 @@ export function EventDetail({ event }: EventDetailProps) {
                   href={event.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white active:opacity-80"
+                  className="block w-full rounded-xl bg-riot-pink py-3.5 text-center text-sm font-semibold text-white cursor-pointer active:opacity-80"
                 >
                   Visit Website
                 </a>
