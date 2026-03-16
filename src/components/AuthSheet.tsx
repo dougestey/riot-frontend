@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { Sheet } from 'konsta/react';
 import { useAuth } from '@/lib/auth';
 
@@ -62,7 +63,7 @@ export function AuthSheet({ opened, onClose }: AuthSheetProps) {
     setMode(mode === 'login' ? 'register' : 'login');
   };
 
-  return (
+  const sheet = (
     <Sheet
       opened={opened}
       onBackdropClick={handleClose}
@@ -167,4 +168,7 @@ export function AuthSheet({ opened, onClose }: AuthSheetProps) {
       </div>
     </Sheet>
   );
+
+  if (typeof document === 'undefined') return sheet;
+  return createPortal(sheet, document.body);
 }
