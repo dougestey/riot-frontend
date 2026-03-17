@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   Page,
@@ -205,7 +206,12 @@ const navbarColors = {
 };
 
 export function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<TabId>('events');
+  const searchParams = useSearchParams();
+  const initialTab = useMemo(() => {
+    const param = searchParams.get('tab');
+    return param && tabOrder.includes(param as TabId) ? (param as TabId) : 'events';
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [eventsResetKey, setEventsResetKey] = useState(0);
   const [searchFocusKey, setSearchFocusKey] = useState(0);
   const [tabEntered, setTabEntered] = useState(true);

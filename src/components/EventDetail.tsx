@@ -14,6 +14,9 @@ import {
 import { LexicalRenderer } from '@/lib/lexical';
 import type { Event, Venue, Category, Organizer } from '@/lib/types';
 import { getMediaUrl, getMediaAlt } from '@/lib/media';
+import { useAuth } from '@/lib/auth';
+import { useSavedEvents } from '@/lib/saved-events';
+import { AuthSheet } from './AuthSheet';
 
 // -- Desktop nav icons (mirrors HomeScreen) --
 
@@ -269,7 +272,11 @@ interface EventDetailProps {
 }
 
 export function EventDetail({ event }: EventDetailProps) {
-  const [saved, setSaved] = useState(false);
+  const { user } = useAuth();
+  const { isSaved, toggleSave } = useSavedEvents();
+  const [toggling, setToggling] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const saved = isSaved(event.id);
   const imageUrl = getMediaUrl(event.featuredImage, 'feature');
   const venue = getVenue(event.venue);
   const categories = getCategories(event.categories);
@@ -318,7 +325,7 @@ export function EventDetail({ event }: EventDetailProps) {
               return (
                 <Link
                   key={tab.id}
-                  href="/"
+                  href={`/?tab=${tab.id}`}
                   className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-white/70 transition-colors hover:text-white cursor-pointer"
                 >
                   <TabIcon active={false} />
@@ -364,8 +371,16 @@ export function EventDetail({ event }: EventDetailProps) {
 
           {/* Favorite button */}
           <button
-            onClick={() => setSaved(!saved)}
-            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm cursor-pointer lg:top-6"
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!user) { setShowAuth(true); return; }
+              if (toggling) return;
+              setToggling(true);
+              try { await toggleSave(event.id); } finally { setToggling(false); }
+            }}
+            disabled={toggling}
+            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm cursor-pointer disabled:opacity-50 lg:top-6"
             aria-label={saved ? 'Remove from saved' : 'Save event'}
           >
             <svg
@@ -624,7 +639,7 @@ export function EventDetail({ event }: EventDetailProps) {
               <TabbarLink
                 key={tab.id}
                 active={isEvents}
-                linkProps={{ href: '/' }}
+                linkProps={{ href: `/?tab=${tab.id}` }}
                 component="a"
                 colors={{
                   textIos: 'text-black/70',
@@ -644,6 +659,8 @@ export function EventDetail({ event }: EventDetailProps) {
           })}
         </ToolbarPane>
       </Tabbar>
+
+      <AuthSheet opened={showAuth} onClose={() => setShowAuth(false)} />
     </Page>
   );
 }

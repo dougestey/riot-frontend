@@ -10,6 +10,17 @@ export function PwaSplashRemover() {
     const el = document.getElementById('pwa-splash');
     if (!el) return;
 
+    const isWarmNav = sessionStorage.getItem('riot-loaded') === '1';
+
+    if (isWarmNav) {
+      // Skip splash animation on in-app navigations
+      el.style.display = 'none';
+      return;
+    }
+
+    // First visit / cold start — show splash then fade out
+    sessionStorage.setItem('riot-loaded', '1');
+
     const hideTimerId = window.setTimeout(() => {
       el.style.transition = `opacity ${FADE_DURATION_MS}ms ease-out`;
       el.style.opacity = '0';
